@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculator - Anshul Jain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        input, button, select {
+            transition: all 0.2s ease;
+            border-radius: 0.5rem;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5; /* Indigo */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        .btn {
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="https://ajrjain.github.io/portfolio/index.html" class="text-2xl font-bold text-indigo-600">Anshul Jain</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="https://ajrjain.github.io/portfolio/index.html" class="text-gray-600 hover:text-indigo-600">Home</a>
+                <a href="https://ajrjain.github.io/portfolio/sip_returns_calc.html" class="text-gray-600 hover:text-indigo-600">Investment Calculator</a>
+                <a href="https://ajrjain.github.io/portfolio/tax_calc.html" class="text-indigo-600 font-semibold">Tax Calculator</a>
+            </div>
+            <a href="mailto:ajr.jain7@gmail.com" class="hidden md:inline-block bg-indigo-600 text-white py-2 px-5 rounded-full btn hover:bg-indigo-700">Contact Me</a>
+        </div>
+    </nav>
+
+    <div class="main-content-wrapper">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl card">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Income Tax Calculator FY 2025-26</h1>
+            <form id="taxForm" class="space-y-6">
+                
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-semibold text-gray-700">Input Basis</h2>
+                    <div class="mt-2 flex space-x-6">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="inputBasis" value="yearly" class="form-radio text-indigo-600" checked>
+                            <span class="ml-2 text-gray-600">Yearly</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="inputBasis" value="monthly" class="form-radio text-indigo-600">
+                            <span class="ml-2 text-gray-600">Monthly</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-semibold text-gray-700">Salary Details</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Basic Salary (₹)</label>
+                            <input type="number" id="basicSalary" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 1000000" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">HRA Received (₹)</label>
+                            <input type="number" id="hraReceived" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 200000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Rent Paid (₹)</label>
+                            <input type="number" id="rentPaid" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 240000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Other Allowances (₹)</label>
+                            <input type="number" id="otherAllowances" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 100000">
+                        </div>
+                         <div>
+                            <label class="block text-sm font-medium text-gray-600">Meal Coupons (e.g., Sodexo, ₹)</label>
+                            <input type="number" id="mealCoupons" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 24000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Bonus (₹)</label>
+                            <input type="number" id="bonus" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 50000">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-600">Income from Other Sources (₹)</label>
+                            <input type="number" id="otherIncome" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 50000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-semibold text-gray-700">Investment Details (For Old Regime)</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Section 80C (₹, Max 1.5L)</label>
+                            <input type="number" id="section80C" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 150000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Section 80D (₹, Max 25K)</label>
+                            <input type="number" id="section80D" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 25000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">NPS (₹, Max 50K)</label>
+                            <input type="number" id="nps" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 50000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Home Loan Interest (₹, Max 2L)</label>
+                            <input type="number" id="homeLoanInterest" class="mt-1 p-2 w-full border rounded-lg" placeholder="e.g., 200000">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-semibold btn">Calculate Tax</button>
+            </form>
+            
+            <div id="results" class="mt-8 hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Tax Calculation Summary</h2>
+                <div id="comparison" class="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg text-center"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="oldRegimeResult" class="p-4 bg-gray-50 rounded-lg border"></div>
+                    <div id="newRegimeResult" class="p-4 bg-gray-50 rounded-lg border"></div>
+                </div>
+                <div id="suggestions" class="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 text-center">
+            <p>© 2025 Anshul Jain. All Rights Reserved.</p>
+            <p class="text-sm text-gray-400 mt-1">Striving for excellence as a premier Software Solution Architect.</p>
+        </div>
+    </footer>
+
+    <script>
+        const oldRegimeSlabs = [
+            { min: 0, max: 250000, rate: 0 },
+            { min: 250001, max: 500000, rate: 0.05 },
+            { min: 500001, max: 1000000, rate: 0.20 },
+            { min: 1000001, max: Infinity, rate: 0.30 }
+        ];
+
+        const newRegimeSlabs = [
+            { min: 0, max: 400000, rate: 0 },
+            { min: 400001, max: 800000, rate: 0.05 },
+            { min: 800001, max: 1200000, rate: 0.10 },
+            { min: 1200001, max: 1600000, rate: 0.15 },
+            { min: 1600001, max: 2000000, rate: 0.20 },
+            { min: 2000001, max: 2400000, rate: 0.25 },
+            { min: 2400001, max: Infinity, rate: 0.30 }
+        ];
+
+        function showMessageBox(message) {
+            const messageBox = document.createElement('div');
+            messageBox.id = 'custom-message-box';
+            messageBox.className = 'fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50';
+            messageBox.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+                    <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                    <button id="message-box-ok" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-200 font-semibold">OK</button>
+                </div>
+            `;
+            document.body.appendChild(messageBox);
+            document.getElementById('message-box-ok').addEventListener('click', () => {
+                document.body.removeChild(messageBox);
+            });
+        }
+
+        document.getElementById('taxForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            try {
+                calculateTax();
+            } catch (error) {
+                console.error('Error in calculateTax:', error);
+                showMessageBox('An error occurred while calculating tax. Please check inputs and try again.');
+            }
+        });
+
+        function calculateTax() {
+            const inputBasis = document.querySelector('input[name="inputBasis"]:checked').value;
+            const multiplier = inputBasis === 'monthly' ? 12 : 1;
+
+            const basicSalary = (parseFloat(document.getElementById('basicSalary').value) || 0) * multiplier;
+            const hraReceived = (parseFloat(document.getElementById('hraReceived').value) || 0) * multiplier;
+            const rentPaid = (parseFloat(document.getElementById('rentPaid').value) || 0) * multiplier;
+            const otherAllowances = (parseFloat(document.getElementById('otherAllowances').value) || 0) * multiplier;
+            const mealCoupons = (parseFloat(document.getElementById('mealCoupons').value) || 0) * multiplier;
+            const bonus = (parseFloat(document.getElementById('bonus').value) || 0) * multiplier;
+            const otherIncome = (parseFloat(document.getElementById('otherIncome').value) || 0) * multiplier;
+            const section80C = Math.min(parseFloat(document.getElementById('section80C').value) || 0, 150000);
+            const section80D = Math.min(parseFloat(document.getElementById('section80D').value) || 0, 25000);
+            const nps = Math.min(parseFloat(document.getElementById('nps').value) || 0, 50000);
+            const homeLoanInterest = Math.min(parseFloat(document.getElementById('homeLoanInterest').value) || 0, 200000);
+            
+            if (basicSalary <= 0) {
+                showMessageBox("Please enter a valid Basic Salary.");
+                return;
+            }
+
+            const hraExemption = Math.max(0, calculateHRAExemption(basicSalary, hraReceived, rentPaid));
+            const grossIncome = basicSalary + hraReceived + otherAllowances + mealCoupons + bonus + otherIncome;
+
+            let oldRegimeTaxableIncome = grossIncome - hraExemption - mealCoupons - 50000 - section80C - section80D - nps - homeLoanInterest;
+            oldRegimeTaxableIncome = Math.max(0, oldRegimeTaxableIncome);
+            let oldRegimeTax = calculateTaxBySlabs(oldRegimeTaxableIncome, oldRegimeSlabs);
+            if (oldRegimeTaxableIncome <= 500000) oldRegimeTax = 0;
+            const oldRegimeCess = oldRegimeTax * 0.04;
+            const oldRegimeTotalTax = oldRegimeTax + oldRegimeCess;
+
+            let newRegimeTaxableIncome = grossIncome - 75000;
+            newRegimeTaxableIncome = Math.max(0, newRegimeTaxableIncome);
+            let newRegimeTax = calculateTaxBySlabs(newRegimeTaxableIncome, newRegimeSlabs);
+            if (newRegimeTaxableIncome <= 1200000) newRegimeTax = 0;
+            const newRegimeCess = newRegimeTax * 0.04;
+            const newRegimeTotalTax = newRegimeTax + newRegimeCess;
+
+            // **FIXED THE BUG HERE**
+            // The call to displayResults now passes the correct variable `newRegimeCess`
+            displayResults(oldRegimeTaxableIncome, oldRegimeTax, oldRegimeCess, oldRegimeTotalTax,
+                           newRegimeTaxableIncome, newRegimeTax, newRegimeCess, newRegimeTotalTax,
+                           hraExemption, mealCoupons, section80C, section80D, nps, homeLoanInterest);
+        }
+
+        function calculateHRAExemption(basicSalary, hraReceived, rentPaid) {
+            const rentMinus10Percent = rentPaid - 0.1 * basicSalary;
+            const fortyPercentBasic = 0.4 * basicSalary;
+            return Math.min(hraReceived, rentMinus10Percent, fortyPercentBasic);
+        }
+
+        function calculateTaxBySlabs(taxableIncome, slabs) {
+            let tax = 0;
+            for (const slab of slabs) {
+                if (taxableIncome > slab.min) {
+                    const taxableInSlab = Math.min(taxableIncome, slab.max) - slab.min;
+                    tax += taxableInSlab * slab.rate;
+                }
+            }
+            return tax;
+        }
+
+        function formatCurrency(num) {
+            return `₹${num.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        }
+
+        function displayResults(oldTaxable, oldTax, oldCess, oldTotal, newTaxable, newTax, newCess, newTotal, hraExemption, mealCoupons, section80C, section80D, nps, homeLoanInterest) {
+            const oldRegimeResult = `
+                <h3 class="text-md font-semibold text-gray-700 text-center mb-2">Old Regime</h3>
+                <p>Taxable Income: <span class="font-medium float-right">${formatCurrency(oldTaxable)}</span></p>
+                <div class="text-xs text-gray-500 space-y-1 mt-2">
+                    <p>HRA Exemption: <span class="float-right">${formatCurrency(hraExemption)}</span></p>
+                    <p>Meal Coupons: <span class="float-right">${formatCurrency(mealCoupons)}</span></p>
+                    <p>Standard Deduction: <span class="float-right">${formatCurrency(50000)}</span></p>
+                    <p>Sec 80C: <span class="float-right">${formatCurrency(section80C)}</span></p>
+                    <p>Sec 80D: <span class="float-right">${formatCurrency(section80D)}</span></p>
+                    <p>NPS: <span class="float-right">${formatCurrency(nps)}</span></p>
+                    <p>Home Loan Int: <span class="float-right">${formatCurrency(homeLoanInterest)}</span></p>
+                </div>
+                <hr class="my-2">
+                <p>Tax (pre-cess): <span class="font-medium float-right">${formatCurrency(oldTax)}</span></p>
+                <p>Cess (4%): <span class="font-medium float-right">${formatCurrency(oldCess)}</span></p>
+                <p class="font-bold text-indigo-700 text-lg mt-1">Total Tax: <span class="float-right">${formatCurrency(oldTotal)}</span></p>
+            `;
+
+            const newRegimeResult = `
+                <h3 class="text-md font-semibold text-gray-700 text-center mb-2">New Regime</h3>
+                <p>Taxable Income: <span class="font-medium float-right">${formatCurrency(newTaxable)}</span></p>
+                <div class="text-xs text-gray-500 space-y-1 mt-2">
+                    <p>Standard Deduction: <span class="float-right">${formatCurrency(75000)}</span></p>
+                </div>
+                <div class="h-36"></div>
+                <hr class="my-2">
+                <p>Tax (pre-cess): <span class="font-medium float-right">${formatCurrency(newTax)}</span></p>
+                <p>Cess (4%): <span class="font-medium float-right">${formatCurrency(newCess)}</span></p>
+                <p class="font-bold text-indigo-700 text-lg mt-1">Total Tax: <span class="float-right">${formatCurrency(newTotal)}</span></p>
+            `;
+
+            const recommendedRegime = oldTotal <= newTotal ? 'Old Regime' : 'New Regime';
+            const savings = Math.abs(oldTotal - newTotal);
+
+            const comparison = `
+                <h3 class="text-xl font-bold ${oldTotal <= newTotal ? 'text-green-600' : 'text-blue-600'}">Recommended: ${recommendedRegime}</h3>
+                <p class="text-gray-700">You can save ${formatCurrency(savings)} by choosing the recommended regime.</p>
+            `;
+
+            let suggestions = '<h3 class="text-md font-semibold text-gray-700">Tax Saving Suggestions</h3><ul class="list-disc pl-5 text-gray-600">';
+            if (section80C < 150000) {
+                suggestions += `<li>Invest up to ${formatCurrency(150000 - section80C)} more in Section 80C (e.g., PPF, ELSS, EPF) to maximize deductions under the Old Regime.</li>`;
+            }
+            if (section80D < 25000) {
+                suggestions += `<li>Consider health insurance to claim up to ${formatCurrency(25000 - section80D)} under Section 80D (for non-senior citizens).</li>`;
+            }
+            if (nps < 50000) {
+                suggestions += `<li>Contribute up to ${formatCurrency(50000 - nps)} to NPS for additional deduction under Section 80CCD(1B) in the Old Regime.</li>`;
+            }
+            if (oldTotal > newTotal) {
+                suggestions += `<li>Switch to the New Regime to save ${formatCurrency(oldTotal - newTotal)} in taxes, as it offers lower tax rates without needing investments.</li>`;
+            } else {
+                suggestions += `<li>Stay with the Old Regime to save ${formatCurrency(newTotal - oldTotal)} by leveraging your deductions.</li>`;
+            }
+            suggestions += '</ul>';
+
+            document.getElementById('oldRegimeResult').innerHTML = oldRegimeResult;
+            document.getElementById('newRegimeResult').innerHTML = newRegimeResult;
+            document.getElementById('comparison').innerHTML = comparison;
+            document.getElementById('suggestions').innerHTML = suggestions;
+            document.getElementById('results').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
