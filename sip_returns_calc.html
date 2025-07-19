@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Returns Calculator - Anshul Jain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for better aesthetics and responsiveness */
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .menu-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .menu-item:hover {
+            background-color: #e5e7eb;
+        }
+        .menu-item.active {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            font-weight: 600;
+        }
+        input[type="number"], select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        button.primary {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+        }
+        button.primary:hover {
+            background-color: #4338ca; /* Darker Indigo */
+            transform: translateY(-1px);
+        }
+        button.secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        button.secondary:hover {
+            background-color: #4b5563;
+            transform: translateY(-1px);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #e5e7eb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 1rem;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+                padding: 1rem;
+            }
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="https://ajrjain.github.io/ajr_ai_pocs/index.html" class="text-2xl font-bold text-indigo-600">Anshul Jain</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="https://ajrjain.github.io/ajr_ai_pocs/index.html" class="text-gray-600 hover:text-indigo-600">Home</a>
+                <a href="https://ajrjain.github.io/ajr_ai_pocs/sip_returns_calc.html" class="text-indigo-600 font-semibold">Investment Calculator</a>
+                <a href="https://ajrjain.github.io/ajr_ai_pocs/tax_calc.html" class="text-gray-600 hover:text-indigo-600">Tax Calculator</a>
+            </div>
+            <a href="#contact" class="hidden md:inline-block bg-indigo-600 text-white py-2 px-5 rounded-full btn hover:bg-indigo-700">Contact</a>
+        </div>
+    </nav>
+
+    <div class="main-content-wrapper">
+        <div class="container flex flex-col md:flex-row p-4 md:p-6">
+            <div class="left-panel w-full md:w-1/4 p-4 md:p-6 bg-gray-50 rounded-lg md:rounded-r-none border-b md:border-b-0 md:border-r border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Calculator Types</h2>
+                <nav>
+                    <ul>
+                        <li><div class="menu-item active" data-calculator="sip">SIP Calculator</div></li>
+                        <li><div class="menu-item" data-calculator="fixed-return">Fixed Return Calculator</div></li>
+                        <li><div class="menu-item" data-calculator="step-up-sip">Step-up SIP Calculator</div></li>
+                        <li><div class="menu-item" data-calculator="swp">SWP Calculator</div></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="right-panel flex-1 p-4 md:p-6">
+                <h2 id="calculator-title" class="text-2xl font-bold text-gray-800 mb-6">SIP Calculator</h2>
+
+                <div id="sip-calculator-fields" class="calculator-fields">
+                    <div class="mb-4">
+                        <label for="sip-amount" class="block text-gray-700 text-sm font-medium mb-2">SIP Amount (₹)</label>
+                        <input type="number" id="sip-amount" value="5000" min="100">
+                    </div>
+                    <div class="mb-4">
+                        <label for="sip-frequency" class="block text-gray-700 text-sm font-medium mb-2">Frequency</label>
+                        <select id="sip-frequency">
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="sip-duration" class="block text-gray-700 text-sm font-medium mb-2">Duration (Years)</label>
+                        <input type="number" id="sip-duration" value="10" min="1" max="50">
+                    </div>
+                    <div class="mb-6">
+                        <label for="sip-expected-return" class="block text-gray-700 text-sm font-medium mb-2">Expected Return Rate (% p.a.)</label>
+                        <input type="number" id="sip-expected-return" value="12" min="1" max="30" step="0.1">
+                    </div>
+                </div>
+
+                <div id="fixed-return-calculator-fields" class="calculator-fields hidden">
+                    <div class="mb-4">
+                        <label for="fixed-principal" class="block text-gray-700 text-sm font-medium mb-2">Principal Amount (₹)</label>
+                        <input type="number" id="fixed-principal" value="100000" min="1000">
+                    </div>
+                    <div class="mb-4">
+                        <label for="fixed-duration" class="block text-gray-700 text-sm font-medium mb-2">Duration (Years)</label>
+                        <input type="number" id="fixed-duration" value="5" min="1" max="50">
+                    </div>
+                    <div class="mb-6">
+                        <label for="fixed-expected-return" class="block text-gray-700 text-sm font-medium mb-2">Expected Return Rate (% p.a.)</label>
+                        <input type="number" id="fixed-expected-return" value="7" min="1" max="30" step="0.1">
+                    </div>
+                </div>
+
+                <div id="step-up-sip-calculator-fields" class="calculator-fields hidden">
+                    <div class="mb-4">
+                        <label for="step-up-sip-amount" class="block text-gray-700 text-sm font-medium mb-2">Initial SIP Amount (₹)</label>
+                        <input type="number" id="step-up-sip-amount" value="5000" min="100">
+                    </div>
+                    <div class="mb-4">
+                        <label for="step-up-sip-frequency" class="block text-gray-700 text-sm font-medium mb-2">Frequency</label>
+                        <select id="step-up-sip-frequency">
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="step-up-sip-duration" class="block text-gray-700 text-sm font-medium mb-2">Duration (Years)</label>
+                        <input type="number" id="step-up-sip-duration" value="10" min="1" max="50">
+                    </div>
+                    <div class="mb-4">
+                        <label for="step-up-sip-expected-return" class="block text-gray-700 text-sm font-medium mb-2">Expected Return Rate (% p.a.)</label>
+                        <input type="number" id="step-up-sip-expected-return" value="12" min="1" max="30" step="0.1">
+                    </div>
+                    <div class="mb-6">
+                        <label for="step-up-sip-rate" class="block text-gray-700 text-sm font-medium mb-2">Step-up Rate (% per year)</label>
+                        <input type="number" id="step-up-sip-rate" value="5" min="1" max="20" step="0.1">
+                    </div>
+                </div>
+
+                <div id="swp-calculator-fields" class="calculator-fields hidden">
+                    <div class="mb-4">
+                        <label for="swp-corpus" class="block text-gray-700 text-sm font-medium mb-2">Initial Corpus (₹)</label>
+                        <input type="number" id="swp-corpus" value="1000000" min="10000">
+                    </div>
+                    <div class="mb-4">
+                        <label for="swp-withdrawal-amount" class="block text-gray-700 text-sm font-medium mb-2">Monthly Withdrawal Amount (₹)</label>
+                        <input type="number" id="swp-withdrawal-amount" value="10000" min="100">
+                    </div>
+                    <div class="mb-4">
+                        <label for="swp-duration" class="block text-gray-700 text-sm font-medium mb-2">Duration (Years)</label>
+                        <input type="number" id="swp-duration" value="10" min="1" max="50">
+                    </div>
+                    <div class="mb-6">
+                        <label for="swp-expected-return" class="block text-gray-700 text-sm font-medium mb-2">Expected Return Rate (% p.a.)</label>
+                        <input type="number" id="swp-expected-return" value="8" min="1" max="20" step="0.1">
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button id="calculate-btn" class="primary">Calculate</button>
+                    <button id="reset-btn" class="secondary">Reset</button>
+                </div>
+
+                <div id="results-section" class="mt-8 hidden">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Calculation Results</h3>
+                    <p id="maturity-amount-display" class="text-lg font-semibold text-indigo-700 mb-4"></p>
+
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Year-wise Breakdown</h4>
+                    <div class="overflow-x-auto">
+                        <table id="results-table" class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Invested Amount (₹)</th>
+                                    <th>Maturity Value (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="results-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-800 text-white mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 text-center">
+            <p class="mb-2">© 2025 Anshul Jain. All Rights Reserved.</p>
+            <p class="text-sm text-gray-400 mt-1">Striving for excellence as a premier Software Solution Architect.</p>
+            <div class="mt-4 space-x-4">
+                <a href="mailto:ajr.jain7@gmail.com" class="hover:text-indigo-300">Contact via Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables for Chart.js instance
+        let myChart;
+
+        // Function to show a custom message box instead of alert()
+        function showMessageBox(message) {
+            const existingBox = document.getElementById('custom-message-box');
+            if(existingBox) existingBox.remove();
+            
+            const messageBox = document.createElement('div');
+            messageBox.id = 'custom-message-box';
+            messageBox.className = 'fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 p-4';
+            messageBox.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+                    <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                    <button id="message-box-ok" class="primary px-6 py-2">OK</button>
+                </div>
+            `;
+            document.body.appendChild(messageBox);
+
+            document.getElementById('message-box-ok').addEventListener('click', () => {
+                document.body.removeChild(messageBox);
+            });
+        }
+
+        function formatCurrency(num) {
+            return `₹${num.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        }
+
+        // Calculation functions (SIP, Fixed, Step-up, SWP)
+        function calculateSipMaturity() {
+            const sipAmount = parseFloat(document.getElementById('sip-amount').value);
+            const frequency = document.getElementById('sip-frequency').value;
+            const duration = parseFloat(document.getElementById('sip-duration').value);
+            const expectedReturn = parseFloat(document.getElementById('sip-expected-return').value);
+
+            if (isNaN(sipAmount) || isNaN(duration) || isNaN(expectedReturn) || sipAmount <= 0 || duration <= 0 || expectedReturn <= 0) {
+                showMessageBox('Please enter valid positive numbers for all SIP fields.');
+                return;
+            }
+
+            let periodicRate = expectedReturn / 100;
+            let numberOfPayments;
+            let paymentPerPeriod = sipAmount;
+
+            if (frequency === 'monthly') {
+                periodicRate = periodicRate / 12;
+                numberOfPayments = duration * 12;
+            } else {
+                numberOfPayments = duration;
+            }
+
+            const maturityAmount = paymentPerPeriod * (Math.pow(1 + periodicRate, numberOfPayments) - 1) / periodicRate;
+            document.getElementById('maturity-amount-display').textContent = `Maturity Amount: ${formatCurrency(maturityAmount)}`;
+
+            const resultsTableBody = document.querySelector('#results-table tbody');
+            resultsTableBody.innerHTML = '';
+            const chartLabels = [];
+            const investedData = [];
+            const maturityData = [];
+            let currentInvested = 0;
+
+            for (let year = 1; year <= duration; year++) {
+                chartLabels.push(`Year ${year}`);
+                let paymentsTillNow, currentMaturity;
+                if (frequency === 'monthly') {
+                    currentInvested += sipAmount * 12;
+                    paymentsTillNow = year * 12;
+                    currentMaturity = sipAmount * (Math.pow(1 + periodicRate, paymentsTillNow) - 1) / periodicRate;
+                } else {
+                    currentInvested += sipAmount;
+                    paymentsTillNow = year;
+                    currentMaturity = sipAmount * (Math.pow(1 + periodicRate, paymentsTillNow) - 1) / periodicRate;
+                }
+                investedData.push(currentInvested);
+                maturityData.push(currentMaturity);
+                const row = resultsTableBody.insertRow();
+                row.insertCell().textContent = year;
+                row.insertCell().textContent = formatCurrency(currentInvested);
+                row.insertCell().textContent = formatCurrency(currentMaturity);
+            }
+            updateChart(chartLabels, investedData, maturityData, 'SIP Performance');
+            document.getElementById('results-section').classList.remove('hidden');
+        }
+
+        function calculateFixedReturnMaturity() {
+            const principal = parseFloat(document.getElementById('fixed-principal').value);
+            const duration = parseFloat(document.getElementById('fixed-duration').value);
+            const expectedReturn = parseFloat(document.getElementById('fixed-expected-return').value);
+
+            if (isNaN(principal) || isNaN(duration) || isNaN(expectedReturn) || principal <= 0 || duration <= 0 || expectedReturn <= 0) {
+                showMessageBox('Please enter valid positive numbers for all Fixed Return fields.');
+                return;
+            }
+
+            const annualRate = expectedReturn / 100;
+            const maturityAmount = principal * Math.pow(1 + annualRate, duration);
+            document.getElementById('maturity-amount-display').textContent = `Maturity Amount: ${formatCurrency(maturityAmount)}`;
+
+            const resultsTableBody = document.querySelector('#results-table tbody');
+            resultsTableBody.innerHTML = '';
+            const chartLabels = [];
+            const investedData = [];
+            const maturityData = [];
+
+            for (let year = 1; year <= duration; year++) {
+                chartLabels.push(`Year ${year}`);
+                const currentMaturity = principal * Math.pow(1 + annualRate, year);
+                investedData.push(principal);
+                maturityData.push(currentMaturity);
+                const row = resultsTableBody.insertRow();
+                row.insertCell().textContent = year;
+                row.insertCell().textContent = formatCurrency(principal);
+                row.insertCell().textContent = formatCurrency(currentMaturity);
+            }
+            updateChart(chartLabels, investedData, maturityData, 'Fixed Return Performance');
+            document.getElementById('results-section').classList.remove('hidden');
+        }
+        
+        function calculateStepUpSipMaturity() {
+            const initialSipAmount = parseFloat(document.getElementById('step-up-sip-amount').value);
+            const frequency = document.getElementById('step-up-sip-frequency').value;
+            const duration = parseFloat(document.getElementById('step-up-sip-duration').value);
+            const expectedReturn = parseFloat(document.getElementById('step-up-sip-expected-return').value);
+            const stepUpRate = parseFloat(document.getElementById('step-up-sip-rate').value);
+
+            if (isNaN(initialSipAmount) || isNaN(duration) || isNaN(expectedReturn) || isNaN(stepUpRate) ||
+                initialSipAmount <= 0 || duration <= 0 || expectedReturn <= 0 || stepUpRate < 0) {
+                showMessageBox('Please enter valid positive numbers for all Step-up SIP fields.');
+                return;
+            }
+
+            const periodicRate = expectedReturn / 100;
+            const stepUpFactor = 1 + (stepUpRate / 100);
+            let currentSipAmount = initialSipAmount;
+            let totalInvested = 0;
+            let maturityAmount = 0;
+
+            const resultsTableBody = document.querySelector('#results-table tbody');
+            resultsTableBody.innerHTML = '';
+            const chartLabels = [], investedData = [], maturityData = [];
+
+            for (let year = 1; year <= duration; year++) {
+                chartLabels.push(`Year ${year}`);
+                let annualContribution = 0;
+                
+                if (frequency === 'monthly') {
+                    const monthlyRate = periodicRate / 12;
+                    for(let month = 1; month <= 12; month++) {
+                        maturityAmount = maturityAmount * (1 + monthlyRate) + currentSipAmount;
+                        annualContribution += currentSipAmount;
+                    }
+                } else {
+                    maturityAmount = maturityAmount * (1 + periodicRate) + currentSipAmount;
+                    annualContribution = currentSipAmount;
+                }
+                
+                totalInvested += annualContribution;
+                investedData.push(totalInvested);
+                maturityData.push(maturityAmount);
+                
+                const row = resultsTableBody.insertRow();
+                row.insertCell().textContent = year;
+                row.insertCell().textContent = formatCurrency(totalInvested);
+                row.insertCell().textContent = formatCurrency(maturityAmount);
+                
+                currentSipAmount *= stepUpFactor;
+            }
+
+            document.getElementById('maturity-amount-display').textContent = `Maturity Amount: ${formatCurrency(maturityAmount)}`;
+            updateChart(chartLabels, investedData, maturityData, 'Step-up SIP Performance');
+            document.getElementById('results-section').classList.remove('hidden');
+        }
+
+        function calculateSwp() {
+            const initialCorpus = parseFloat(document.getElementById('swp-corpus').value);
+            const monthlyWithdrawal = parseFloat(document.getElementById('swp-withdrawal-amount').value);
+            const duration = parseFloat(document.getElementById('swp-duration').value);
+            const expectedReturn = parseFloat(document.getElementById('swp-expected-return').value);
+
+            if (isNaN(initialCorpus) || isNaN(monthlyWithdrawal) || isNaN(duration) || isNaN(expectedReturn) ||
+                initialCorpus <= 0 || monthlyWithdrawal <= 0 || duration <= 0 || expectedReturn <= 0) {
+                showMessageBox('Please enter valid positive numbers for all SWP fields.');
+                return;
+            }
+            if (monthlyWithdrawal * 12 > (initialCorpus * (expectedReturn / 100))) {
+                 showMessageBox('Warning: Withdrawal amount is higher than the expected annual return. The corpus might deplete quickly.');
+            }
+
+            let currentCorpus = initialCorpus;
+            const monthlyRate = expectedReturn / 100 / 12;
+            const totalMonths = duration * 12;
+            const resultsTableBody = document.querySelector('#results-table tbody');
+            resultsTableBody.innerHTML = '';
+            const chartLabels = [], corpusRemainingData = [], totalWithdrawnData = [];
+            let totalWithdrawn = 0;
+
+            for (let month = 1; month <= totalMonths; month++) {
+                const interestEarned = currentCorpus * monthlyRate;
+                currentCorpus += interestEarned - monthlyWithdrawal;
+                totalWithdrawn += monthlyWithdrawal;
+
+                if (currentCorpus < 0) { currentCorpus = 0; }
+                if (month % 12 === 0) {
+                    const year = month / 12;
+                    chartLabels.push(`Year ${year}`);
+                    corpusRemainingData.push(currentCorpus);
+                    totalWithdrawnData.push(totalWithdrawn);
+                    const row = resultsTableBody.insertRow();
+                    row.insertCell().textContent = year;
+                    row.insertCell().textContent = formatCurrency(totalWithdrawn);
+                    row.insertCell().textContent = formatCurrency(currentCorpus);
+                }
+                 if(currentCorpus === 0) break; // Stop if corpus depleted
+            }
+
+            document.getElementById('maturity-amount-display').textContent = `Remaining Corpus: ${formatCurrency(currentCorpus)} (Total Withdrawn: ${formatCurrency(totalWithdrawn)})`;
+            updateChart(chartLabels, corpusRemainingData, totalWithdrawnData, 'SWP Performance', 'Remaining Corpus', 'Total Withdrawn');
+            document.getElementById('results-section').classList.remove('hidden');
+        }
+
+
+        // Universal chart update function
+        function updateChart(labels, data1, data2, title, label1 = 'Invested Amount', label2 = 'Maturity Value') {
+            const ctx = document.getElementById('results-chart').getContext('2d');
+            if (myChart) { myChart.destroy(); }
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: label1,
+                            data: data1,
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                            tension: 0.3, fill: true, pointRadius: 3, pointBackgroundColor: '#4f46e5'
+                        },
+                        {
+                            label: label2,
+                            data: data2,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            tension: 0.3, fill: true, pointRadius: 3, pointBackgroundColor: '#10b981'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: title, font: { size: 18 }, color: '#374151' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label || ''}: ${formatCurrency(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Year', color: '#4b5563' }, grid: { display: false } },
+                        y: {
+                            title: { display: true, text: 'Amount (₹)', color: '#4b5563' },
+                            beginAtZero: true,
+                            ticks: { callback: (value) => formatCurrency(value) }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Reset all fields
+        function resetCalculator() {
+            document.getElementById('sip-amount').value = 5000;
+            document.getElementById('sip-duration').value = 10;
+            document.getElementById('sip-expected-return').value = 12;
+            document.getElementById('fixed-principal').value = 100000;
+            document.getElementById('fixed-duration').value = 5;
+            document.getElementById('fixed-expected-return').value = 7;
+            document.getElementById('step-up-sip-amount').value = 5000;
+            document.getElementById('step-up-sip-duration').value = 10;
+            document.getElementById('step-up-sip-expected-return').value = 12;
+            document.getElementById('step-up-sip-rate').value = 5;
+            document.getElementById('swp-corpus').value = 1000000;
+            document.getElementById('swp-withdrawal-amount').value = 10000;
+            document.getElementById('swp-duration').value = 10;
+            document.getElementById('swp-expected-return').value = 8;
+            document.getElementById('results-section').classList.add('hidden');
+        }
+
+        // Event listener setup
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                const calculatorType = this.dataset.calculator;
+                document.getElementById('calculator-title').textContent = this.textContent;
+                document.querySelectorAll('.calculator-fields').forEach(fields => fields.classList.add('hidden'));
+                document.getElementById(`${calculatorType}-calculator-fields`).classList.remove('hidden');
+                resetCalculator();
+            });
+        });
+
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            const activeCalculator = document.querySelector('.menu-item.active').dataset.calculator;
+            switch (activeCalculator) {
+                case 'sip': calculateSipMaturity(); break;
+                case 'fixed-return': calculateFixedReturnMaturity(); break;
+                case 'step-up-sip': calculateStepUpSipMaturity(); break;
+                case 'swp': calculateSwp(); break;
+            }
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', resetCalculator);
+
+        // Initial load
+        window.onload = function() {
+            // No initial calculation to allow user to choose.
+        };
+    </script>
+</body>
+</html>
