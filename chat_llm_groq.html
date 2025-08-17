@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groq Chatbot - Anshul Jain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        #chatbot-container {
+            margin-top: 2rem;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 800px;
+        }
+        #chatbot-output {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #eee;
+            border-radius: 0.25rem;
+            background-color: #f9f9f9;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="https://ajrjain.github.io/portfolio/index.html" class="text-2xl font-bold text-indigo-600">Anshul Jain</a>
+            <div class="flex items-center space-x-5">
+                <a href="https://www.linkedin.com/in/anshuljain7/" target="_blank" class="text-2xl text-gray-500 hover:text-indigo-600 transition-colors"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.udemy.com/user/anshul-jain-50/" target="_blank" class="text-2xl text-gray-500 hover:text-indigo-600 transition-colors"><i class="fa-solid fa-graduation-cap"></i></a>
+                <a href="#contact" class="hidden md:inline-block bg-indigo-600 text-white py-2 px-5 rounded-full btn hover:bg-indigo-700">Contact Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <section id="chatbot" class="mb-16">
+            <div class="bg-white rounded-lg shadow-md p-6 card">
+                <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Groq Chatbot</h2>
+                <div id="chatbot-container">
+                    <label for="groqApiKey">Groq API Key:</label>
+                    <input type="password" id="groqApiKey" name="groqApiKey" placeholder="Enter your Groq API Key" class="mt-1 p-2 w-full border rounded-lg">
+
+                    <label for="modelSelect">Select Model:</label>
+                    <select id="modelSelect" class="mt-1 p-2 w-full border rounded-lg"></select>
+
+                    <div class="mt-4">
+                        <input type="text" id="chatbotInput" placeholder="Type your message..." class="mt-1 p-2 w-full border rounded-lg">
+                        <button onclick="sendToGroq()" class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 font-semibold mt-2">Send</button>
+                    </div>
+
+                    <div id="chatbot-output" class="mt-4"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-6 px-4 text-center">
+            <p>© 2025 Anshul Jain. All Rights Reserved.</p>
+            <p class="text-sm text-gray-400 mt-1">Striving for excellence as a premier Software Solution Architect.</p>
+        </div>
+    </footer>
+
+    <script>
+        async function fetchModels() {
+            const apiKey = document.getElementById('groqApiKey').value;
+            const modelSelect = document.getElementById('modelSelect');
+
+            if (!apiKey) {
+                modelSelect.innerHTML = '<option value="" disabled>Please enter your Groq API key</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://api.groq.com/models/list', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const models = data.models;
+
+                modelSelect.innerHTML = ''; // Clear existing options
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.id;
+                    modelSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Error fetching models:", error);
+                modelSelect.innerHTML = '<option value="" disabled>Error fetching models</option>';
+            }
+        }
+
+        async function sendToGroq() {
+            const apiKey = document.getElementById('groqApiKey').value;
+            const model = document.getElementById('modelSelect').value;
+            const message = document.getElementById('chatbotInput').value;
+            const outputDiv = document.getElementById('chatbot-output');
+
+            if (!apiKey) {
+                outputDiv.textContent = "Please enter your Groq API key.";
+                return;
+            }
+
+            if (!model) {
+                outputDiv.textContent = "Please select a model.";
+                return;
+            }
+
+            if (!message) {
+                outputDiv.textContent = "Please enter a message.";
+                return;
+            }
+
+            try {
+                const response = await fetch('https://api.groq.com/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: "user", content: message }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const chatbotResponse = data.choices[0]?.message?.content || "Error: No response from Groq.";
+                outputDiv.innerHTML += `<p><strong>You:</strong> ${message}</p><p><strong>Groq:</strong> ${chatbotResponse}</p>`;
+                document.getElementById('chatbotInput').value = ""; // Clear input
+                outputDiv.scrollTop = outputDiv.scrollHeight; // Auto-scroll to bottom
+
+            } catch (error) {
+                outputDiv.textContent = `Error: ${error.message}`;
+                console.error("Groq API error:", error);
+            }
+        }
+
+        // Fetch models when the page loads
+        window.onload = fetchModels;
+    </script>
+</body>
+</html>
