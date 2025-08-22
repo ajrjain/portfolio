@@ -3,61 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POML Prompt Converter</title>
+    <title>Microsoft POML Prompt Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #E8F0FE;
+            margin: 0;
             padding: 20px;
-            background-color: #f4f4f9;
+            color: #1E1E1E;
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #0057B7;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .container {
-            background: white;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #FFFFFF;
             padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .left-panel, .right-panel {
+            padding: 20px;
+        }
+        .left-panel {
+            background: #F5F9FF;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .right-panel {
+            background: #F0F4F8;
+            border-radius: 8px;
         }
         label {
             display: block;
             margin: 10px 0 5px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #003087;
+            position: relative;
+        }
+        .info-icon {
+            cursor: help;
+            color: #0078D4;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        .info-icon:hover + .tooltip {
+            display: block;
+        }
+        .tooltip {
+            display: none;
+            position: absolute;
+            background: #0057B7;
+            color: #FFFFFF;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 200px;
+            z-index: 10;
+            top: 100%;
+            left: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         textarea, select, input[type="text"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #0078D4;
             border-radius: 4px;
             box-sizing: border-box;
+            background: #FFFFFF;
+            transition: border-color 0.3s;
+        }
+        textarea:focus, select:focus, input[type="text"]:focus {
+            border-color: #0057B7;
+            outline: none;
         }
         textarea {
             height: 100px;
             resize: vertical;
         }
         button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
+            background: linear-gradient(90deg, #0078D4, #00B7C3);
+            color: #FFFFFF;
+            padding: 12px 24px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
         }
         button:hover {
-            background-color: #0056b3;
+            transform: scale(1.05);
         }
         #output {
             margin-top: 20px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 15px;
+            background: #1E1E1E;
+            color: #FFFFFF;
+            border-radius: 8px;
             white-space: pre-wrap;
-            min-height: 100px;
+            font-family: 'Consolas', monospace;
+            min-height: 200px;
+            overflow-x: auto;
         }
         .form-group {
             margin-bottom: 15px;
@@ -67,63 +121,86 @@
             margin-top: 5px;
         }
         .error {
-            color: red;
+            color: #D13438;
             font-size: 14px;
             margin-top: 5px;
+        }
+        h3 {
+            color: #003087;
+            margin-top: 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>POML Prompt Converter</h1>
+    <h1>Microsoft POML Prompt Converter</h1>
     <div class="container">
-        <div class="form-group">
-            <label for="promptInput">Task Description:</label>
-            <textarea id="promptInput" placeholder="e.g., Generate a summary of AI advancements in 2025"></textarea>
+        <div class="left-panel">
+            <div class="form-group">
+                <label for="promptInput">Task Description<i class="fa fa-info-circle info-icon"></i>
+                    <span class="tooltip">The main instruction for the AI, e.g., 'Summarize a product review.'</span>
+                </label>
+                <textarea id="promptInput" placeholder="e.g., Generate a summary of AI advancements in 2025"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="role">Role<i class="fa fa-info-circle info-icon"></i>
+                    <span class="tooltip">The AI's persona, e.g., 'Analyst' or 'Tutor.' Choose 'Other' for custom roles like 'Actor.'</span>
+                </label>
+                <select id="role" onchange="toggleOtherInput('role', 'otherRoleInput')">
+                    <option value="Assistant">Assistant</option>
+                    <option value="Expert">Expert</option>
+                    <option value="Tutor">Tutor</option>
+                    <option value="Analyst">Analyst</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" id="otherRoleInput" class="other-input" placeholder="e.g., Actor">
+            </div>
+            <div class="form-group">
+                <label for="tone">Tone<i class="fa fa-info-circle info-icon"></i>
+                    <span class="tooltip">The style of the response, e.g., 'Formal' or 'Friendly.' Use 'Other' for custom tones like 'Dramatic.'</span>
+                </label>
+                <select id="tone" onchange="toggleOtherInput('tone', 'otherToneInput')">
+                    <option value="Neutral">Neutral</option>
+                    <option value="Formal">Formal</option>
+                    <option value="Informal">Informal</option>
+                    <option value="Friendly">Friendly</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" id="otherToneInput" class="other-input" placeholder="e.g., Dramatic">
+            </div>
+            <div class="form-group">
+                <label for="format">Format<i class="fa fa-info-circle info-icon"></i>
+                    <span class="tooltip">The output format, e.g., 'Text' or 'JSON.' Select 'Other' for custom formats like 'Bullet Points.'</span>
+                </label>
+                <select id="format" onchange="toggleOtherInput('format', 'otherFormatInput')">
+                    <option value="Text">Text</option>
+                    <option value="JSON">JSON</option>
+                    <option value="Markdown">Markdown</option>
+                    <option value="List">List</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" id="otherFormatInput" class="other-input" placeholder="e.g., Bullet Points">
+            </div>
+            <div class="form-group">
+                <label for="constraints">Constraints (one per line)<i class="fa fa-info-circle info-icon"></i>
+                    <span class="tooltip">Rules for the AI, e.g., 'Keep it under 200 words.' Enter one per line.</span>
+                </label>
+                <textarea id="constraints" placeholder="e.g., Keep it under 200 words\nUse simple language"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="examples">Examples (one per line, format: Input|Output)<i class="fa fa-info-circle info-icon"></i>
+                    <span class="tooltip">Sample input-output pairs to guide the AI, e.g., 'Summarize AI trends|AI in 2025 focuses on ethics.'</span>
+                </label>
+                <textarea id="examples" placeholder="e.g., Summarize AI trends|AI in 2025 focuses on ethics and automation."></textarea>
+            </div>
+            <button id="convertButton">Convert to POML</button>
         </div>
-        <div class="form-group">
-            <label for="role">Role:</label>
-            <select id="role" onchange="toggleOtherInput('role', 'otherRoleInput')">
-                <option value="Assistant">Assistant</option>
-                <option value="Expert">Expert</option>
-                <option value="Tutor">Tutor</option>
-                <option value="Analyst">Analyst</option>
-                <option value="Other">Other</option>
-            </select>
-            <input type="text" id="otherRoleInput" class="other-input" placeholder="e.g., Actor">
-        </div>
-        <div class="form-group">
-            <label for="tone">Tone:</label>
-            <select id="tone" onchange="toggleOtherInput('tone', 'otherToneInput')">
-                <option value="Neutral">Neutral</option>
-                <option value="Formal">Formal</option>
-                <option value="Informal">Informal</option>
-                <option value="Friendly">Friendly</option>
-                <option value="Other">Other</option>
-            </select>
-            <input type="text" id="otherToneInput" class="other-input" placeholder="e.g., Dramatic">
-        </div>
-        <div class="form-group">
-            <label for="format">Format:</label>
-            <select id="format" onchange="toggleOtherInput('format', 'otherFormatInput')">
-                <option value="Text">Text</option>
-                <option value="JSON">JSON</option>
-                <option value="Markdown">Markdown</option>
-                <option value="List">List</option>
-                <option value="Other">Other</option>
-            </select>
-            <input type="text" id="otherFormatInput" class="other-input" placeholder="e.g., Bullet Points">
-        </div>
-        <div class="form-group">
-            <label for="constraints">Constraints (one per line):</label>
-            <textarea id="constraints" placeholder="e.g., Keep it under 200 words\nUse simple language"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="examples">Examples (one per line, format: Input|Output):</label>
-            <textarea id="examples" placeholder="e.g., Summarize AI trends|AI in 2025 focuses on ethics and automation."></textarea>
-        </div>
-        <button id="convertButton">Convert to POML</button>
-        <div>
-            <h3>POML Output:</h3>
+        <div class="right-panel">
+            <h3>POML Output</h3>
             <div id="output"></div>
         </div>
     </div>
