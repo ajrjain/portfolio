@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POML Prompt Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        textarea, select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            min-height: 100px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .other-input {
+            display: none;
+            margin-top: 5px;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>POML Prompt Converter</h1>
+    <div class="container">
+        <div class="form-group">
+            <label for="promptInput">Task Description:</label>
+            <textarea id="promptInput" placeholder="e.g., Generate a summary of AI advancements in 2025"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select id="role" onchange="toggleOtherInput('role', 'otherRoleInput')">
+                <option value="Assistant">Assistant</option>
+                <option value="Expert">Expert</option>
+                <option value="Tutor">Tutor</option>
+                <option value="Analyst">Analyst</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" id="otherRoleInput" class="other-input" placeholder="e.g., Actor">
+        </div>
+        <div class="form-group">
+            <label for="tone">Tone:</label>
+            <select id="tone" onchange="toggleOtherInput('tone', 'otherToneInput')">
+                <option value="Neutral">Neutral</option>
+                <option value="Formal">Formal</option>
+                <option value="Informal">Informal</option>
+                <option value="Friendly">Friendly</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" id="otherToneInput" class="other-input" placeholder="e.g., Dramatic">
+        </div>
+        <div class="form-group">
+            <label for="format">Format:</label>
+            <select id="format" onchange="toggleOtherInput('format', 'otherFormatInput')">
+                <option value="Text">Text</option>
+                <option value="JSON">JSON</option>
+                <option value="Markdown">Markdown</option>
+                <option value="List">List</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" id="otherFormatInput" class="other-input" placeholder="e.g., Bullet Points">
+        </div>
+        <div class="form-group">
+            <label for="constraints">Constraints (one per line):</label>
+            <textarea id="constraints" placeholder="e.g., Keep it under 200 words\nUse simple language"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="examples">Examples (one per line, format: Input|Output):</label>
+            <textarea id="examples" placeholder="e.g., Summarize AI trends|AI in 2025 focuses on ethics and automation."></textarea>
+        </div>
+        <button id="convertButton">Convert to POML</button>
+        <div>
+            <h3>POML Output:</h3>
+            <div id="output"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const convertButton = document.getElementById('convertButton');
+            if (convertButton) {
+                convertButton.addEventListener('click', convertToPOML);
+                console.log('Button event listener attached');
+            } else {
+                console.error('Convert button not found');
+            }
+        });
+
+        function toggleOtherInput(selectId, inputId) {
+            const select = document.getElementById(selectId);
+            const input = document.getElementById(inputId);
+            if (select && input) {
+                input.style.display = select.value === 'Other' ? 'block' : 'none';
+                if (select.value !== 'Other') {
+                    input.value = '';
+                }
+                console.log(`Toggled ${inputId}: display=${input.style.display}`);
+            } else {
+                console.error(`Element not found: selectId=${selectId}, inputId=${inputId}`);
+            }
+        }
+
+        function convertToPOML() {
+            console.log('convertToPOML function called');
+            try {
+                const description = document.getElementById('promptInput')?.value.trim();
+                const roleSelect = document.getElementById('role');
+                const toneSelect = document.getElementById('tone');
+                const formatSelect = document.getElementById('format');
+                const outputDiv = document.getElementById('output');
+
+                if (!description || !roleSelect || !toneSelect || !formatSelect || !outputDiv) {
+                    outputDiv.textContent = 'Error: One or more form elements are missing.';
+                    console.error('Missing form elements:', { description, roleSelect, toneSelect, formatSelect, outputDiv });
+                    return;
+                }
+
+                const role = roleSelect.value === 'Other' ? document.getElementById('otherRoleInput').value.trim() : roleSelect.value;
+                const tone = toneSelect.value === 'Other' ? document.getElementById('otherToneInput').value.trim() : toneSelect.value;
+                const format = formatSelect.value === 'Other' ? document.getElementById('otherFormatInput').value.trim() : formatSelect.value;
+                const constraints = document.getElementById('constraints').value.trim().split('\n').filter(c => c);
+                const examples = document.getElementById('examples').value.trim().split('\n').filter(e => e);
+
+                if (!description) {
+                    outputDiv.textContent = 'Please enter a task description.';
+                    console.log('Validation failed: No description');
+                    return;
+                }
+                if (roleSelect.value === 'Other' && !role) {
+                    outputDiv.textContent = 'Please enter a custom role.';
+                    console.log('Validation failed: No custom role');
+                    return;
+                }
+                if (toneSelect.value === 'Other' && !tone) {
+                    outputDiv.textContent = 'Please enter a custom tone.';
+                    console.log('Validation failed: No custom tone');
+                    return;
+                }
+                if (formatSelect.value === 'Other' && !format) {
+                    outputDiv.textContent = 'Please enter a custom format.';
+                    console.log('Validation failed: No custom format');
+                    return;
+                }
+
+                // Build POML structure
+                let pomlOutput = `<prompt version="1.0" xmlns="http://schemas.microsoft.com/poml/2024">\n`;
+                pomlOutput += `    <task>\n`;
+                pomlOutput += `        <description>${description}</description>\n`;
+                pomlOutput += `        <context>\n`;
+                pomlOutput += `            <role>${role}</role>\n`;
+                pomlOutput += `            <tone>${tone}</tone>\n`;
+                pomlOutput += `            <format>${format}</format>\n`;
+                pomlOutput += `        </context>\n`;
+
+                // Add constraints if provided
+                if (constraints.length > 0) {
+                    pomlOutput += `        <constraints>\n`;
+                    constraints.forEach(constraint => {
+                        pomlOutput += `            <constraint>${constraint}</constraint>\n`;
+                    });
+                    pomlOutput += `        </constraints>\n`;
+                }
+
+                // Add examples if provided
+                if (examples.length > 0) {
+                    pomlOutput += `        <examples>\n`;
+                    examples.forEach(example => {
+                        const [input, output] = example.split('|').map(s => s.trim());
+                        if (input && output) {
+                            pomlOutput += `            <example>\n`;
+                            pomlOutput += `                <input>${input}</input>\n`;
+                            pomlOutput += `                <output>${output}</output>\n`;
+                            pomlOutput += `            </example>\n`;
+                        }
+                    });
+                    pomlOutput += `        </examples>\n`;
+                }
+
+                pomlOutput += `    </task>\n`;
+                pomlOutput += `</prompt>`;
+
+                outputDiv.textContent = pomlOutput;
+                console.log('POML output generated successfully');
+            } catch (error) {
+                const outputDiv = document.getElementById('output');
+                outputDiv.textContent = 'Error generating POML. Please check inputs and try again.';
+                console.error('Error in convertToPOML:', error);
+            }
+        }
+    </script>
+</body>
+</html>
