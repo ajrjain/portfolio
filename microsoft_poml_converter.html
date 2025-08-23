@@ -3,244 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microsoft POML Prompt Converter</title>
+    <title>Microsoft POML Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #E8F0FE;
-            margin: 0;
-            padding: 20px;
-            color: #1E1E1E;
+            font-family: 'Poppins', sans-serif;
         }
-        h1 {
-            text-align: center;
-            color: #0057B7;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        .btn {
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            background: #FFFFFF;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .left-panel, .right-panel {
-            padding: 20px;
-        }
-        .left-panel {
-            background: #F5F9FF;
-            border-radius: 8px;
-        }
-        .right-panel {
-            background: #F0F4F8;
-            border-radius: 8px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: 600;
-            color: #003087;
-            position: relative;
-        }
-        .info-icon {
-            cursor: help;
-            color: #0078D4;
-            margin-left: 5px;
-            font-size: 14px;
-        }
-        .info-icon:hover + .tooltip {
-            display: block;
-        }
-        .tooltip {
-            display: none;
-            position: absolute;
-            background: #0057B7;
-            color: #FFFFFF;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            width: 200px;
-            z-index: 10;
-            top: 100%;
-            left: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        textarea, select, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #0078D4;
-            border-radius: 4px;
-            box-sizing: border-box;
-            background: #FFFFFF;
-            transition: border-color 0.3s;
-        }
-        textarea:focus, select:focus, input[type="text"]:focus {
-            border-color: #0057B7;
-            outline: none;
-        }
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
-        button {
-            background: linear-gradient(90deg, #0078D4, #00B7C3);
-            color: #FFFFFF;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.2s;
-        }
-        button:hover {
-            transform: scale(1.05);
-        }
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background: #1E1E1E;
-            color: #FFFFFF;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            font-family: 'Consolas', monospace;
-            min-height: 200px;
-            overflow-x: auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .other-input {
-            display: none;
-            margin-top: 5px;
-        }
-        .error {
-            color: #D13438;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        h3 {
-            color: #003087;
-            margin-top: 0;
-        }
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
+        .btn:hover {
+            transform: translateY(-2px);
         }
     </style>
 </head>
-<body>
-    <h1>Microsoft POML Prompt Converter</h1>
-    <div class="container">
-        <div class="left-panel">
-            <div class="form-group">
-                <label for="promptInput">Task Description<i class="fa fa-info-circle info-icon"></i>
-                    <span class="tooltip">The main instruction for the AI, e.g., 'Summarize a product review.'</span>
-                </label>
-                <textarea id="promptInput" placeholder="e.g., Generate a summary of AI advancements in 2025"></textarea>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="https://ajrjain.github.io/portfolio/index.html" class="text-2xl font-bold text-indigo-600">Anshul Jain</a>
+            <div class="flex items-center space-x-5">
+                <a href="https://www.linkedin.com/in/anshuljain7/" target="_blank" class="text-2xl text-gray-500 hover:text-indigo-600 transition-colors"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.udemy.com/user/anshul-jain-50/" target="_blank" class="text-2xl text-gray-500 hover:text-indigo-600 transition-colors"><i class="fa-solid fa-graduation-cap"></i></a>
+                <a href="https://ajrjain.github.io/portfolio/index.html#articles" class="hidden md:inline-block text-gray-500 hover:text-indigo-600 transition-colors">Articles</a>
+                <a href="https://ajrjain.github.io/portfolio/index.html#contact" class="hidden md:inline-block bg-indigo-600 text-white py-2 px-5 rounded-full btn hover:bg-indigo-700">Contact Me</a>
             </div>
-            <div class="form-group">
-                <label for="role">Role<i class="fa fa-info-circle info-icon"></i>
-                    <span class="tooltip">The AI's persona, e.g., 'Analyst' or 'Tutor.' Choose 'Other' for custom roles like 'Actor.'</span>
-                </label>
-                <select id="role" onchange="toggleOtherInput('role', 'otherRoleInput')">
-                    <option value="Assistant">Assistant</option>
-                    <option value="Expert">Expert</option>
-                    <option value="Tutor">Tutor</option>
-                    <option value="Analyst">Analyst</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="text" id="otherRoleInput" class="other-input" placeholder="e.g., Actor">
-            </div>
-            <div class="form-group">
-                <label for="tone">Tone<i class="fa fa-info-circle info-icon"></i>
-                    <span class="tooltip">The style of the response, e.g., 'Formal' or 'Friendly.' Use 'Other' for custom tones like 'Dramatic.'</span>
-                </label>
-                <select id="tone" onchange="toggleOtherInput('tone', 'otherToneInput')">
-                    <option value="Neutral">Neutral</option>
-                    <option value="Formal">Formal</option>
-                    <option value="Informal">Informal</option>
-                    <option value="Friendly">Friendly</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="text" id="otherToneInput" class="other-input" placeholder="e.g., Dramatic">
-            </div>
-            <div class="form-group">
-                <label for="format">Format<i class="fa fa-info-circle info-icon"></i>
-                    <span class="tooltip">The output format, e.g., 'Text' or 'JSON.' Select 'Other' for custom formats like 'Bullet Points.'</span>
-                </label>
-                <select id="format" onchange="toggleOtherInput('format', 'otherFormatInput')">
-                    <option value="Text">Text</option>
-                    <option value="JSON">JSON</option>
-                    <option value="Markdown">Markdown</option>
-                    <option value="List">List</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="text" id="otherFormatInput" class="other-input" placeholder="e.g., Bullet Points">
-            </div>
-            <div class="form-group">
-                <label for="constraints">Constraints (one per line)<i class="fa fa-info-circle info-icon"></i>
-                    <span class="tooltip">Rules for the AI, e.g., 'Keep it under 200 words.' Enter one per line.</span>
-                </label>
-                <textarea id="constraints" placeholder="e.g., Keep it under 200 words\nUse simple language"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="examples">Examples (one per line, format: Input|Output)<i class="fa fa-info-circle info-icon"></i>
-                    <span class="tooltip">Sample input-output pairs to guide the AI, e.g., 'Summarize AI trends|AI in 2025 focuses on ethics.'</span>
-                </label>
-                <textarea id="examples" placeholder="e.g., Summarize AI trends|AI in 2025 focuses on ethics and automation."></textarea>
-            </div>
-            <button id="convertButton">Convert to POML</button>
         </div>
-        <div class="right-panel">
-            <h3>POML Output</h3>
-            <div id="output"></div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-12 w-full">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-indigo-600">Microsoft POML Prompt Generator</h1>
+            <p class="text-gray-500 mt-2">Create structured, high-quality prompts using the POML standard.</p>
         </div>
-    </div>
+
+        <div class="container grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white p-8 rounded-lg shadow-xl">
+            <div class="left-panel bg-gray-50 rounded-lg p-6">
+                <div class="form-group mb-4">
+                    <label for="promptInput" class="block mb-2 font-semibold text-gray-700">
+                        Task Description
+                        <i class="fa fa-info-circle text-blue-500 cursor-help ml-1"></i>
+                        <span class="tooltip hidden absolute z-10 p-2 text-xs text-white bg-blue-600 rounded-md -mt-1 -ml-10">The main instruction for the AI, e.g., 'Summarize a product review.'</span>
+                    </label>
+                    <textarea id="promptInput" class="w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm" placeholder="e.g., Generate a summary of AI advancements in 2025"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="role" class="block mb-2 font-semibold text-gray-700">
+                        Role
+                        <i class="fa fa-info-circle text-blue-500 cursor-help ml-1"></i>
+                        <span class="tooltip hidden absolute z-10 p-2 text-xs text-white bg-blue-600 rounded-md -mt-1 -ml-10">The AI's persona, e.g., 'Analyst' or 'Tutor.' Choose 'Other' for custom roles like 'Actor.'</span>
+                    </label>
+                    <select id="role" onchange="toggleOtherInput('role', 'otherRoleInput')" class="w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm">
+                        <option value="Assistant">Assistant</option>
+                        <option value="Expert">Expert</option>
+                        <option value="Tutor">Tutor</option>
+                        <option value="Analyst">Analyst</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="text" id="otherRoleInput" class="hidden other-input mt-2 w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm" placeholder="e.g., Actor">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="tone" class="block mb-2 font-semibold text-gray-700">
+                        Tone
+                        <i class="fa fa-info-circle text-blue-500 cursor-help ml-1"></i>
+                        <span class="tooltip hidden absolute z-10 p-2 text-xs text-white bg-blue-600 rounded-md -mt-1 -ml-10">The style of the response, e.g., 'Formal' or 'Friendly.' Use 'Other' for custom tones like 'Dramatic.'</span>
+                    </label>
+                    <select id="tone" onchange="toggleOtherInput('tone', 'otherToneInput')" class="w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm">
+                        <option value="Neutral">Neutral</option>
+                        <option value="Formal">Formal</option>
+                        <option value="Informal">Informal</option>
+                        <option value="Friendly">Friendly</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="text" id="otherToneInput" class="hidden other-input mt-2 w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm" placeholder="e.g., Dramatic">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="format" class="block mb-2 font-semibold text-gray-700">
+                        Format
+                        <i class="fa fa-info-circle text-blue-500 cursor-help ml-1"></i>
+                        <span class="tooltip hidden absolute z-10 p-2 text-xs text-white bg-blue-600 rounded-md -mt-1 -ml-10">The output format, e.g., 'Text' or 'JSON.' Select 'Other' for custom formats like 'Bullet Points.'</span>
+                    </label>
+                    <select id="format" onchange="toggleOtherInput('format', 'otherFormatInput')" class="w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm">
+                        <option value="Text">Text</option>
+                        <option value="JSON">JSON</option>
+                        <option value="Markdown">Markdown</option>
+                        <option value="List">List</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="text" id="otherFormatInput" class="hidden other-input mt-2 w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm" placeholder="e.g., Bullet Points">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="constraints" class="block mb-2 font-semibold text-gray-700">
+                        Constraints (one per line)
+                        <i class="fa fa-info-circle text-blue-500 cursor-help ml-1"></i>
+                        <span class="tooltip hidden absolute z-10 p-2 text-xs text-white bg-blue-600 rounded-md -mt-1 -ml-10">Rules for the AI, e.g., 'Keep it under 200 words.' Enter one per line.</span>
+                    </label>
+                    <textarea id="constraints" class="w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm" placeholder="e.g., Keep it under 200 words&#10;Use simple language"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="examples" class="block mb-2 font-semibold text-gray-700">
+                        Examples (one per line, format: Input|Output)
+                        <i class="fa fa-info-circle text-blue-500 cursor-help ml-1"></i>
+                        <span class="tooltip hidden absolute z-10 p-2 text-xs text-white bg-blue-600 rounded-md -mt-1 -ml-10">Sample input-output pairs to guide the AI, e.g., 'Summarize AI trends|AI in 2025 focuses on ethics.'</span>
+                    </label>
+                    <textarea id="examples" class="w-full p-3 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm" placeholder="e.g., Summarize AI trends|AI in 2025 focuses on ethics and automation."></textarea>
+                </div>
+                <button id="convertButton" class="w-full bg-indigo-600 text-white py-3 rounded-full font-bold shadow-md hover:bg-indigo-700 transition-all transform hover:scale-105 btn">
+                    Convert to POML
+                </button>
+            </div>
+            <div class="right-panel bg-gray-100 rounded-lg p-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">POML Output</h3>
+                <div id="output" class="bg-gray-800 text-white p-6 rounded-lg font-mono text-sm whitespace-pre-wrap overflow-x-auto min-h-[200px]"></div>
+                <div id="copy-message" class="mt-2 text-sm text-center text-green-600 hidden">Copied to clipboard!</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-6 px-4 text-center">
+            <p>© 2025 Anshul Jain. All Rights Reserved.</p>
+            <p class="text-sm text-gray-400 mt-1">Striving for excellence as a premier Software Solution Architect.</p>
+        </div>
+    </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const convertButton = document.getElementById('convertButton');
+            const outputDiv = document.getElementById('output');
+            
             if (convertButton) {
                 convertButton.addEventListener('click', convertToPOML);
-                console.log('Button event listener attached');
-            } else {
-                console.error('Convert button not found');
             }
+            if (outputDiv) {
+                outputDiv.addEventListener('click', copyToClipboard);
+            }
+
+            // Show tooltips on hover
+            const infoIcons = document.querySelectorAll('.info-icon');
+            infoIcons.forEach(icon => {
+                const tooltip = icon.nextElementSibling;
+                icon.addEventListener('mouseenter', () => tooltip.classList.remove('hidden'));
+                icon.addEventListener('mouseleave', () => tooltip.classList.add('hidden'));
+            });
         });
 
         function toggleOtherInput(selectId, inputId) {
             const select = document.getElementById(selectId);
             const input = document.getElementById(inputId);
             if (select && input) {
-                input.style.display = select.value === 'Other' ? 'block' : 'none';
+                input.classList.toggle('hidden', select.value !== 'Other');
                 if (select.value !== 'Other') {
                     input.value = '';
                 }
-                console.log(`Toggled ${inputId}: display=${input.style.display}`);
-            } else {
-                console.error(`Element not found: selectId=${selectId}, inputId=${inputId}`);
             }
         }
 
         function convertToPOML() {
-            console.log('convertToPOML function called');
             try {
                 const description = document.getElementById('promptInput')?.value.trim();
                 const roleSelect = document.getElementById('role');
                 const toneSelect = document.getElementById('tone');
                 const formatSelect = document.getElementById('format');
                 const outputDiv = document.getElementById('output');
+                const copyMessage = document.getElementById('copy-message');
 
-                if (!description || !roleSelect || !toneSelect || !formatSelect || !outputDiv) {
-                    outputDiv.textContent = 'Error: One or more form elements are missing.';
-                    console.error('Missing form elements:', { description, roleSelect, toneSelect, formatSelect, outputDiv });
+                if (!outputDiv) {
+                    console.error('Output div not found.');
+                    return;
+                }
+
+                if (!description) {
+                    outputDiv.textContent = 'Error: Please enter a task description.';
                     return;
                 }
 
@@ -250,24 +190,16 @@
                 const constraints = document.getElementById('constraints').value.trim().split('\n').filter(c => c);
                 const examples = document.getElementById('examples').value.trim().split('\n').filter(e => e);
 
-                if (!description) {
-                    outputDiv.textContent = 'Please enter a task description.';
-                    console.log('Validation failed: No description');
-                    return;
-                }
                 if (roleSelect.value === 'Other' && !role) {
-                    outputDiv.textContent = 'Please enter a custom role.';
-                    console.log('Validation failed: No custom role');
+                    outputDiv.textContent = 'Error: Please enter a custom role.';
                     return;
                 }
                 if (toneSelect.value === 'Other' && !tone) {
-                    outputDiv.textContent = 'Please enter a custom tone.';
-                    console.log('Validation failed: No custom tone');
+                    outputDiv.textContent = 'Error: Please enter a custom tone.';
                     return;
                 }
                 if (formatSelect.value === 'Other' && !format) {
-                    outputDiv.textContent = 'Please enter a custom format.';
-                    console.log('Validation failed: No custom format');
+                    outputDiv.textContent = 'Error: Please enter a custom format.';
                     return;
                 }
 
@@ -309,12 +241,34 @@
                 pomlOutput += `</prompt>`;
 
                 outputDiv.textContent = pomlOutput;
-                console.log('POML output generated successfully');
+                copyMessage.classList.add('hidden');
             } catch (error) {
                 const outputDiv = document.getElementById('output');
                 outputDiv.textContent = 'Error generating POML. Please check inputs and try again.';
                 console.error('Error in convertToPOML:', error);
             }
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output').textContent;
+            const copyMessage = document.getElementById('copy-message');
+            
+            if (output.trim() === '' || output.startsWith('Error')) {
+                return;
+            }
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = output;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            copyMessage.textContent = 'Copied to clipboard!';
+            copyMessage.classList.remove('hidden');
+            setTimeout(() => {
+                copyMessage.classList.add('hidden');
+            }, 2000);
         }
     </script>
 </body>
