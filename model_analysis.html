@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Performance Analysis Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Configure Tailwind to use the Inter font and a modern color palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-cyan': '#06B6D4', // Cyan-500
+                        'dark-bg': '#0F172A', // Slate-900
+                        'card-bg': '#1E293B', // Slate-800
+                        'sidebar-bg': '#111827', // Gray-900
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for better look in dark mode */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 20px;
+            border: 2px solid #1e293b;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg font-sans text-gray-100 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="py-4 bg-sidebar-bg border-b border-gray-700 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-xl sm:text-2xl font-extrabold text-primary-cyan tracking-tight">
+                LLM Insights Dashboard
+            </h1>
+            <p class="text-sm text-gray-400 hidden sm:block">Filter • Compare • Visualize Performance Metrics</p>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 grid lg:grid-cols-4 gap-8">
+
+        <!-- Sidebar / Filter Panel -->
+        <aside class="lg:col-span-1 p-6 bg-card-bg rounded-xl shadow-custom h-full sticky top-4">
+            <h2 class="text-xl font-bold mb-6 text-primary-cyan border-b border-gray-700 pb-3">Data Filters</h2>
+
+            <!-- Removed onchange handler from here -->
+            <div class="space-y-6">
+                
+                <!-- Creator Filter -->
+                <div>
+                    <label for="creator-filter" class="block text-sm font-medium text-gray-300 mb-2">Model Creator</label>
+                    <select id="creator-filter" class="w-full p-2 rounded-lg bg-sidebar-bg border border-gray-600 focus:ring-primary-cyan focus:border-primary-cyan text-gray-50">
+                        <option value="all">All Creators</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <!-- Intelligence Index Filter -->
+                <div>
+                    <label for="intelligence-range" class="block text-sm font-medium text-gray-300 mb-2">Intelligence Index (Min: <span id="intelligence-value">0</span>)</label>
+                    <input type="range" id="intelligence-range" min="0" max="100" value="0" step="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg">
+                </div>
+
+                <!-- Speed Filter (Tokens/Sec) -->
+                <div>
+                    <label for="speed-range" class="block text-sm font-medium text-gray-300 mb-2">Speed (Min: <span id="speed-value">0</span> tokens/sec)</label>
+                    <input type="range" id="speed-range" min="0" max="200" value="0" step="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg">
+                </div>
+
+                <!-- Pricing Filter (Max Input Price) -->
+                <div>
+                    <label for="price-max" class="block text-sm font-medium text-gray-300 mb-2">Max Input Price (<span id="price-value">$20</span>/1M tokens)</label>
+                    <input type="range" id="price-max" min="0" max="50" value="20" step="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg">
+                </div>
+            </div>
+            
+            <!-- Added ID for JavaScript handler and removed onclick -->
+            <button id="apply-filters-btn" class="mt-8 w-full py-2 px-4 bg-primary-cyan text-dark-bg font-semibold rounded-lg shadow-md hover:bg-cyan-400 transition duration-150">
+                Apply Filters
+            </button>
+        </aside>
+
+        <!-- Main Dashboard Area -->
+        <div class="lg:col-span-3 space-y-8">
+            
+            <!-- Visualization Card -->
+            <div class="p-6 bg-card-bg rounded-xl shadow-custom">
+                <h2 class="text-2xl font-bold mb-4 text-gray-50">Intelligence vs. Speed Comparison</h2>
+                <div class="h-96">
+                    <canvas id="llmChart"></canvas>
+                </div>
+                <p id="chart-message" class="text-center text-sm text-gray-400 mt-4 hidden">Not enough data to draw the chart.</p>
+            </div>
+
+            <!-- Results Table Card -->
+            <div class="p-6 bg-card-bg rounded-xl shadow-custom">
+                <h2 class="text-2xl font-bold mb-4 text-gray-50">Filtered Model Results</h2>
+                
+                <div class="overflow-x-auto custom-scroll max-h-[500px]">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-sidebar-bg sticky top-0 z-10">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-primary-cyan uppercase tracking-wider">Model</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-primary-cyan uppercase tracking-wider">Creator</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-primary-cyan uppercase tracking-wider">Intelligence Index</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-primary-cyan uppercase tracking-wider">Speed (tokens/s)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-primary-cyan uppercase tracking-wider">Input Price ($/1M)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body" class="divide-y divide-gray-700">
+                            <!-- Filtered rows will be rendered here by JavaScript -->
+                            <tr><td colspan="5" class="text-center py-8 text-gray-400">Loading model data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 bg-sidebar-bg mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            <p>Data provided by Artificial Analysis API Mock Data. Attribution is required for real-world usage.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. MOCK DATA DEFINITION ---
+        const MOCK_LLM_DATA = [
+            { id: "1", name: "GPT-4o", model_creator: { name: "OpenAI" }, evaluations: { artificial_analysis_intelligence_index: 92.5, mmlu_pro: 0.95 }, pricing: { price_1m_input_tokens: 5.0, price_1m_output_tokens: 15.0 }, median_output_tokens_per_second: 120.5 },
+            { id: "2", name: "Claude 3 Opus", model_creator: { name: "Anthropic" }, evaluations: { artificial_analysis_intelligence_index: 91.8, mmlu_pro: 0.93 }, pricing: { price_1m_input_tokens: 15.0, price_1m_output_tokens: 75.0 }, median_output_tokens_per_second: 85.0 },
+            { id: "3", name: "Gemini 2.5 Flash", model_creator: { name: "Google" }, evaluations: { artificial_analysis_intelligence_index: 84.2, mmlu_pro: 0.88 }, pricing: { price_1m_input_tokens: 0.35, price_1m_output_tokens: 0.70 }, median_output_tokens_per_second: 180.2 },
+            { id: "4", name: "Llama 3 8B", model_creator: { name: "Meta" }, evaluations: { artificial_analysis_intelligence_index: 75.1, mmlu_pro: 0.81 }, pricing: { price_1m_input_tokens: 0.0, price_1m_output_tokens: 0.0 }, median_output_tokens_per_second: 150.0 },
+            { id: "5", name: "Mistral Large", model_creator: { name: "Mistral AI" }, evaluations: { artificial_analysis_intelligence_index: 88.9, mmlu_pro: 0.91 }, pricing: { price_1m_input_tokens: 8.0, price_1m_output_tokens: 24.0 }, median_output_tokens_per_second: 110.8 },
+            { id: "6", name: "GPT-3.5 Turbo", model_creator: { name: "OpenAI" }, evaluations: { artificial_analysis_intelligence_index: 80.5, mmlu_pro: 0.85 }, pricing: { price_1m_input_tokens: 0.5, price_1m_output_tokens: 1.5 }, median_output_tokens_per_second: 165.1 },
+        ];
+
+        let llmChart;
+
+        // --- 2. UTILITY FUNCTIONS ---
+
+        // Function to update the displayed range values
+        function updateRangeValues() {
+            document.getElementById('intelligence-value').textContent = document.getElementById('intelligence-range').value;
+            document.getElementById('speed-value').textContent = document.getElementById('speed-range').value;
+            document.getElementById('price-value').textContent = '$' + document.getElementById('price-max').value;
+        }
+
+        // --- 3. CHART RENDERING ---
+        function renderChart(data) {
+            const ctx = document.getElementById('llmChart').getContext('2d');
+            
+            // Check if we have data and if chart already exists
+            if (llmChart) {
+                llmChart.destroy();
+            }
+
+            if (data.length < 2) {
+                document.getElementById('chart-message').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('chart-message').classList.add('hidden');
+
+
+            llmChart = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: data.map(model => ({
+                        label: model.name,
+                        data: [{
+                            x: model.evaluations.artificial_analysis_intelligence_index, // X-axis: Intelligence
+                            y: model.median_output_tokens_per_second, // Y-axis: Speed
+                            r: Math.max(8, model.pricing.price_1m_input_tokens * 0.5) // Bubble size based on price (scaled)
+                        }],
+                        backgroundColor: model.model_creator.name === 'OpenAI' ? 'rgba(6, 182, 212, 0.8)' : 
+                                         model.model_creator.name === 'Anthropic' ? 'rgba(239, 68, 68, 0.8)' : 
+                                         model.model_creator.name === 'Google' ? 'rgba(251, 191, 36, 0.8)' :
+                                         'rgba(14, 165, 233, 0.8)', // Default blue
+                        hoverBackgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Intelligence Index (Score)',
+                                color: '#9CA3AF'
+                            },
+                            grid: { color: '#374151' },
+                            ticks: { color: '#D1D5DB' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Speed (Tokens/Second)',
+                                color: '#9CA3AF'
+                            },
+                            grid: { color: '#374151' },
+                            ticks: { color: '#D1D5DB' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#D1D5DB'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const model = context.dataset.label;
+                                    const xValue = context.parsed.x.toFixed(1);
+                                    const yValue = context.parsed.y.toFixed(1);
+                                    const rValue = context.raw.r / 0.5; // Reverse scale for actual price
+                                    return [
+                                        model,
+                                        `Intelligence: ${xValue}`,
+                                        `Speed: ${yValue} tokens/s`,
+                                        `Input Price: $${rValue.toFixed(2)}/1M`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 4. TABLE RENDERING ---
+        function renderTable(data) {
+            const tbody = document.getElementById('results-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">No models match the current filter criteria.</td></tr>';
+                return;
+            }
+
+            data.forEach(model => {
+                const row = tbody.insertRow();
+                row.className = 'hover:bg-gray-700 transition duration-150';
+                
+                row.insertCell(0).textContent = model.name;
+                row.insertCell(1).textContent = model.model_creator.name;
+                row.insertCell(2).textContent = model.evaluations.artificial_analysis_intelligence_index.toFixed(1);
+                row.insertCell(3).textContent = model.median_output_tokens_per_second.toFixed(1);
+                row.insertCell(4).textContent = `$${model.pricing.price_1m_input_tokens.toFixed(2)}`;
+
+                row.cells[0].className = 'px-4 py-3 whitespace-nowrap font-medium text-primary-cyan';
+                for (let i = 1; i < 5; i++) {
+                    row.cells[i].className = 'px-4 py-3 whitespace-nowrap text-sm text-gray-300';
+                }
+            });
+        }
+
+        // --- 5. FILTERING LOGIC ---
+        function applyFilters() {
+            const creator = document.getElementById('creator-filter').value;
+            const minIntelligence = parseFloat(document.getElementById('intelligence-range').value);
+            const minSpeed = parseFloat(document.getElementById('speed-range').value);
+            const maxPrice = parseFloat(document.getElementById('price-max').value);
+            
+            updateRangeValues(); // Update values before filtering
+
+            const filteredData = MOCK_LLM_DATA.filter(model => {
+                // 1. Creator Filter
+                const creatorMatch = (creator === 'all' || model.model_creator.name === creator);
+                
+                // 2. Intelligence Filter
+                const intelligenceMatch = model.evaluations.artificial_analysis_intelligence_index >= minIntelligence;
+                
+                // 3. Speed Filter
+                const speedMatch = model.median_output_tokens_per_second >= minSpeed;
+
+                // 4. Price Filter
+                const priceMatch = model.pricing.price_1m_input_tokens <= maxPrice;
+
+                return creatorMatch && intelligenceMatch && speedMatch && priceMatch;
+            });
+
+            renderTable(filteredData);
+            renderChart(filteredData);
+        }
+
+        // --- 6. INITIALIZATION ---
+        function initializeFilters() {
+            // Get unique creators for the dropdown
+            const creators = [...new Set(MOCK_LLM_DATA.map(m => m.model_creator.name))].sort();
+            const creatorSelect = document.getElementById('creator-filter');
+
+            creators.forEach(creator => {
+                const option = document.createElement('option');
+                option.value = creator;
+                option.textContent = creator;
+                creatorSelect.appendChild(option);
+            });
+
+            // Add event listeners for range inputs to update text dynamically
+            document.getElementById('intelligence-range').addEventListener('input', updateRangeValues);
+            document.getElementById('speed-range').addEventListener('input', updateRangeValues);
+            document.getElementById('price-max').addEventListener('input', updateRangeValues);
+
+            // FIX: Attach main filter function to the button click event
+            document.getElementById('apply-filters-btn').addEventListener('click', applyFilters);
+        }
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFilters();
+            updateRangeValues(); // Set initial text values for ranges
+            applyFilters(); // Apply filters to load initial data and chart
+        });
+    </script>
+</body>
+</html>
