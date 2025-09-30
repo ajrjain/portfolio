@@ -3,26 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM & Media Model Analysis Dashboard</title>
+    <title>LLM Model Analysis Dashboard</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <!-- Configure Tailwind to use the Inter font and a modern color palette -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Configure Tailwind to use the Inter font and Indigo palette to match the portfolio -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Poppins', 'sans-serif'], // Use Poppins to match portfolio
                     },
                     colors: {
-                        'primary-cyan': '#0891B2', // Cyan-600
+                        'primary-indigo': '#4f46e5', // Indigo-600 from portfolio
+                        'primary-cyan': '#0891B2', // Keep Cyan for highlights within the tool
                         'light-bg': '#F8FAFC', // Slate-50
                         'card-bg': '#FFFFFF', // White
                         'sidebar-bg': '#F1F5F9', // Slate-100
                         'text-color': '#1E293B', // Slate-800
-                        'footer-bg': '#1E293B', // Slate-800 for footer
+                        'footer-bg': '#1E293B', // Slate-800 for footer (from portfolio)
                     },
                     boxShadow: {
                         'custom': '0 4px 12px rgba(0, 0, 0, 0.1)',
@@ -45,38 +48,34 @@
             border: 2px solid #F1F5F9;
         }
 
-        /* Tab active state styling */
+        /* Tab active state styling - adjusted to Indigo primary color */
         .tab-active {
             border-bottom-width: 3px;
-            border-color: #0891B2; /* primary-cyan */
-            color: #0891B2;
+            border-color: #4f46e5; /* primary-indigo */
+            color: #4f46e5;
             font-weight: 600;
         }
     </style>
 </head>
 <body class="bg-light-bg font-sans text-text-color antialiased min-h-screen flex flex-col">
 
-    <!-- 1. Portfolio Header (Global Navigation) -->
-    <header id="portfolio-header" class="bg-primary-cyan shadow-xl sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <a href="https://ajrjain.github.io/portfolio/index.html" class="text-2xl font-bold text-white hover:text-cyan-200 transition-colors">
-                AJRJAIN Portfolio
+    <!-- 1. Dashboard Navbar (Matches Portfolio Navbar Style) -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-primary-indigo hover:text-indigo-700 transition-colors">
+                <i class="fas fa-arrow-left text-xl mr-2"></i> Back to Portfolio
             </a>
-            <nav class="hidden md:flex space-x-6">
-                <a href="#home" class="text-white hover:text-cyan-200 transition-colors font-medium">Home</a>
-                <a href="#projects" class="text-white hover:text-cyan-200 transition-colors font-medium">Projects</a>
-                <a href="#blog" class="text-white hover:text-cyan-200 transition-colors font-medium">Blog</a>
-                <a href="#contact" class="text-white hover:text-cyan-200 transition-colors font-medium">Contact</a>
-            </nav>
-            <!-- Mobile Menu button can be added here -->
+            <div class="flex items-center space-x-5">
+                <a href="#tools" class="hidden md:inline-block bg-primary-indigo text-white py-2 px-5 rounded-full hover:bg-indigo-700 transition">Go to Tools Section</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <!-- 2. Dashboard Title and Tabs (Tool-Specific Navigation) -->
     <div class="bg-card-bg border-b border-gray-200 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
             <h1 class="text-2xl font-extrabold text-text-color tracking-tight mb-4">
-                AI Model Analysis Tool
+                AI Model Performance Analysis Tool
             </h1>
             
             <!-- Navigation Tabs -->
@@ -193,43 +192,16 @@
         </div>
     </div>
 
-    <!-- 3. Portfolio Footer (Global Footer) -->
-    <footer id="portfolio-footer" class="bg-footer-bg text-white mt-12 pt-10 pb-6 border-t border-cyan-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-cyan mb-3">Portfolio</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
-                        <li><a href="#projects" class="text-gray-300 hover:text-white transition-colors">Projects</a></li>
-                        <li><a href="#about" class="text-gray-300 hover:text-white transition-colors">About Me</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-cyan mb-3">Tools</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">LLM Analysis Tool</a></li>
-                        <li><a href="#tool-2" class="text-gray-300 hover:text-white transition-colors">Other Tool 2</a></li>
-                        <li><a href="#tool-3" class="text-gray-300 hover:text-white transition-colors">Other Tool 3</a></li>
-                    </ul>
-                </div>
-                <div class="col-span-2 text-right md:text-left">
-                    <h3 class="text-lg font-semibold text-primary-cyan mb-3">Contact</h3>
-                    <p class="text-gray-300">Email: <a href="mailto:contact@example.com" class="hover:text-white transition-colors">contact@example.com</a></p>
-                    <p class="text-gray-300">LinkedIn: <a href="#linkedin" class="hover:text-white transition-colors">/ajrjain</a></p>
-                </div>
-            </div>
-            <div class="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500 text-sm">
-                &copy; <span id="current-year">2024</span> AJRJAIN Portfolio. All rights reserved.
-            </div>
+    <!-- Footer (Simplified to match portfolio) -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-6 px-4 text-center">
+            <p>© 2025 Anshul Jain. All Rights Reserved. | <a href="index.html" class="text-primary-indigo hover:text-white transition-colors">Back to Portfolio Home</a></p>
         </div>
     </footer>
 
+
     <!-- JavaScript Logic -->
     <script>
-        // Set current year dynamically in footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
         // --- 1. CONFIGURATION AND MOCK DATA ---
         const API_LLM_ENDPOINT = "https://artificialanalysis.ai/api/v2/data/llms/models";
         // NOTE: The API key is blank as per instructions. It will trigger a 401 error, leading to mock data fallback.
@@ -933,7 +905,8 @@
             Object.keys(MODEL_TYPES).forEach(key => {
                 const button = document.createElement('button');
                 button.textContent = MODEL_TYPES[key];
-                button.className = `px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary-cyan transition-colors duration-150 border-b-2 border-transparent focus:outline-none`;
+                // Use Indigo colors from portfolio for better consistency
+                button.className = `px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary-indigo transition-colors duration-150 border-b-2 border-transparent focus:outline-none`;
                 button.setAttribute('data-model-type', key);
                 tabsContainer.appendChild(button);
 
