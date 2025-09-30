@@ -22,6 +22,7 @@
                         'card-bg': '#FFFFFF', // White
                         'sidebar-bg': '#F1F5F9', // Slate-100
                         'text-color': '#1E293B', // Slate-800
+                        'footer-bg': '#1E293B', // Slate-800 for footer
                     },
                     boxShadow: {
                         'custom': '0 4px 12px rgba(0, 0, 0, 0.1)',
@@ -55,11 +56,27 @@
 </head>
 <body class="bg-light-bg font-sans text-text-color antialiased min-h-screen flex flex-col">
 
-    <!-- Header and Navigation Tabs -->
-    <header class="bg-card-bg border-b border-gray-200 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 class="text-2xl font-extrabold text-primary-cyan tracking-tight mb-4">
-                AI Model Analysis Dashboard
+    <!-- 1. Portfolio Header (Global Navigation) -->
+    <header id="portfolio-header" class="bg-primary-cyan shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <a href="https://ajrjain.github.io/portfolio/index.html" class="text-2xl font-bold text-white hover:text-cyan-200 transition-colors">
+                AJRJAIN Portfolio
+            </a>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#home" class="text-white hover:text-cyan-200 transition-colors font-medium">Home</a>
+                <a href="#projects" class="text-white hover:text-cyan-200 transition-colors font-medium">Projects</a>
+                <a href="#blog" class="text-white hover:text-cyan-200 transition-colors font-medium">Blog</a>
+                <a href="#contact" class="text-white hover:text-cyan-200 transition-colors font-medium">Contact</a>
+            </nav>
+            <!-- Mobile Menu button can be added here -->
+        </div>
+    </header>
+
+    <!-- 2. Dashboard Title and Tabs (Tool-Specific Navigation) -->
+    <div class="bg-card-bg border-b border-gray-200 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+            <h1 class="text-2xl font-extrabold text-text-color tracking-tight mb-4">
+                AI Model Analysis Tool
             </h1>
             
             <!-- Navigation Tabs -->
@@ -69,7 +86,7 @@
                 </div>
             </nav>
         </div>
-    </header>
+    </div>
 
     <!-- Main Content Grid -->
     <div class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 grid lg:grid-cols-4 gap-8">
@@ -176,15 +193,43 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="py-4 bg-sidebar-bg mt-auto border-t border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-            <p>Data based on Artificial Analysis API Mock Data and live free API endpoints. Attribution is required for real-world usage.</p>
+    <!-- 3. Portfolio Footer (Global Footer) -->
+    <footer id="portfolio-footer" class="bg-footer-bg text-white mt-12 pt-10 pb-6 border-t border-cyan-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-primary-cyan mb-3">Portfolio</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#projects" class="text-gray-300 hover:text-white transition-colors">Projects</a></li>
+                        <li><a href="#about" class="text-gray-300 hover:text-white transition-colors">About Me</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-primary-cyan mb-3">Tools</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">LLM Analysis Tool</a></li>
+                        <li><a href="#tool-2" class="text-gray-300 hover:text-white transition-colors">Other Tool 2</a></li>
+                        <li><a href="#tool-3" class="text-gray-300 hover:text-white transition-colors">Other Tool 3</a></li>
+                    </ul>
+                </div>
+                <div class="col-span-2 text-right md:text-left">
+                    <h3 class="text-lg font-semibold text-primary-cyan mb-3">Contact</h3>
+                    <p class="text-gray-300">Email: <a href="mailto:contact@example.com" class="hover:text-white transition-colors">contact@example.com</a></p>
+                    <p class="text-gray-300">LinkedIn: <a href="#linkedin" class="hover:text-white transition-colors">/ajrjain</a></p>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500 text-sm">
+                &copy; <span id="current-year">2024</span> AJRJAIN Portfolio. All rights reserved.
+            </div>
         </div>
     </footer>
 
     <!-- JavaScript Logic -->
     <script>
+        // Set current year dynamically in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
         // --- 1. CONFIGURATION AND MOCK DATA ---
         const API_LLM_ENDPOINT = "https://artificialanalysis.ai/api/v2/data/llms/models";
         // NOTE: The API key is blank as per instructions. It will trigger a 401 error, leading to mock data fallback.
