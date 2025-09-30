@@ -43,17 +43,31 @@
             border-radius: 20px;
             border: 2px solid #F1F5F9;
         }
+
+        /* Tab active state styling */
+        .tab-active {
+            border-bottom-width: 3px;
+            border-color: #0891B2; /* primary-cyan */
+            color: #0891B2;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-light-bg font-sans text-text-color antialiased min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="py-4 bg-card-bg border-b border-gray-200 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
-            <h1 class="text-xl sm:text-2xl font-extrabold text-primary-cyan tracking-tight mb-2 sm:mb-0">
+    <!-- Header and Navigation Tabs -->
+    <header class="bg-card-bg border-b border-gray-200 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-2xl font-extrabold text-primary-cyan tracking-tight mb-4">
                 AI Model Analysis Dashboard
             </h1>
-            <p class="text-sm text-gray-500">Filter • Compare • Visualize Metrics Across Categories</p>
+            
+            <!-- Navigation Tabs -->
+            <nav class="border-b border-gray-200">
+                <div id="nav-tabs" class="flex space-x-6 overflow-x-auto -mb-[1px]">
+                    <!-- Tabs dynamically added here -->
+                </div>
+            </nav>
         </div>
     </header>
 
@@ -62,22 +76,24 @@
 
         <!-- Sidebar / Filter Panel -->
         <aside class="lg:col-span-1 p-6 bg-sidebar-bg rounded-xl shadow-custom h-full sticky top-4">
-            <h2 class="text-xl font-bold mb-6 text-primary-cyan border-b border-gray-300 pb-3">Analysis Filters</h2>
+            <h2 class="text-xl font-bold mb-6 text-primary-cyan border-b border-gray-300 pb-3">
+                <span id="current-analysis-title">LLMs (Text)</span> Filters
+            </h2>
+            
+            <div id="loading-message" class="text-center text-sm text-gray-500 py-4 hidden">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-cyan inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading data...
+            </div>
+            <div id="api-error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm mb-4 hidden" role="alert">
+                <strong class="font-bold">API Warning:</strong> Cannot connect to live data. Using mock data.
+            </div>
 
-            <div class="space-y-6">
-                
-                <!-- Model Type Selector -->
-                <div>
-                    <label for="model-type-filter" class="block text-sm font-medium text-text-color mb-2">Model Type</label>
-                    <select id="model-type-filter" class="w-full p-2 rounded-lg bg-card-bg border border-gray-300 focus:ring-primary-cyan focus:border-primary-cyan text-text-color">
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                </div>
-
-                <!-- Dynamic Filters Container (LLM or T2I filters will go here) -->
-                <div id="dynamic-filters-container" class="space-y-6">
-                    <!-- LLM filters initially loaded -->
-                </div>
+            <!-- Dynamic Filters Container (LLM or T2I filters will go here) -->
+            <div id="dynamic-filters-container" class="space-y-6">
+                <!-- LLM filters initially loaded -->
             </div>
             
             <button id="apply-filters-btn" class="mt-8 w-full py-2 px-4 bg-primary-cyan text-white font-semibold rounded-lg shadow-md hover:bg-cyan-600 transition duration-150">
@@ -127,9 +143,34 @@
                             </tr>
                         </thead>
                         <tbody id="results-table-body" class="divide-y divide-gray-200">
-                            <tr><td colspan="5" class="text-center py-8 text-gray-500">Select a model type and click Apply Filters.</td></tr>
+                            <tr><td colspan="7" class="text-center py-8 text-gray-500">Select a model type and click Apply Filters.</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- New Terminology Card -->
+            <div class="p-6 bg-card-bg rounded-xl shadow-custom">
+                <h2 class="text-2xl font-bold mb-4 text-text-color border-b border-gray-300 pb-2">Key Terminology & Usage</h2>
+                <div class="space-y-4 text-gray-700">
+                    <p>This dashboard uses metrics sourced from Artificial Analysis to help you evaluate AI models.</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>
+                            <strong class="text-text-color">Intelligence Index:</strong> A composite score reflecting a model's overall reasoning and knowledge capabilities. Higher is better.
+                        </li>
+                        <li>
+                            <strong class="text-text-color">ELO Rating:</strong> A measure of relative skill or performance, typically used for Media models (Image, Video, Speech). It indicates how a model compares to others in blind human evaluations. An ELO of 1200 is often considered average; higher is better.
+                        </li>
+                        <li>
+                            <strong class="text-text-color">Coding / Math Index:</strong> Sub-scores for Large Language Models indicating proficiency in those specific domains.
+                        </li>
+                        <li>
+                            <strong class="text-text-color">Tokens/Second (Speed):</strong> Measures the output generation speed of LLMs. This is a critical factor for low-latency applications.
+                        </li>
+                        <li>
+                            <strong class="text-text-color">Free/Open Source:</strong> Models that have no associated input pricing (i.e., $0.00/1M input tokens).
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -138,45 +179,17 @@
     <!-- Footer -->
     <footer class="py-4 bg-sidebar-bg mt-auto border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-            <p>Data based on Artificial Analysis API Mock Data. Attribution is required for real-world usage.</p>
+            <p>Data based on Artificial Analysis API Mock Data and live free API endpoints. Attribution is required for real-world usage.</p>
         </div>
     </footer>
 
     <!-- JavaScript Logic -->
     <script>
-        // --- 1. MOCK DATA DEFINITION ---
-        const MOCK_DATA = {
-            LLMs: [
-                { id: "1", name: "GPT-4o", model_creator: { name: "OpenAI" }, evaluations: { artificial_analysis_intelligence_index: 92.5, artificial_analysis_coding_index: 85.0, artificial_analysis_math_index: 90.5, mmlu_pro: 0.95, gpqa: 0.90, hle: 0.88, livecodebench: 0.92, scicode: 0.86, math_500: 0.97, aime: 0.91 }, pricing: { price_1m_input_tokens: 5.0, price_1m_output_tokens: 15.0 }, median_output_tokens_per_second: 120.5 },
-                { id: "2", name: "Claude 3 Opus", model_creator: { name: "Anthropic" }, evaluations: { artificial_analysis_intelligence_index: 91.8, artificial_analysis_coding_index: 82.5, artificial_analysis_math_index: 88.0, mmlu_pro: 0.93, gpqa: 0.89, hle: 0.85, livecodebench: 0.90, scicode: 0.84, math_500: 0.95, aime: 0.89 }, pricing: { price_1m_input_tokens: 15.0, price_1m_output_tokens: 75.0 }, median_output_tokens_per_second: 85.0 },
-                { id: "3", name: "Gemini 2.5 Flash", model_creator: { name: "Google" }, evaluations: { artificial_analysis_intelligence_index: 84.2, artificial_analysis_coding_index: 75.0, artificial_analysis_math_index: 80.0, mmlu_pro: 0.88, gpqa: 0.79, hle: 0.75, livecodebench: 0.80, scicode: 0.77, math_500: 0.85, aime: 0.81 }, pricing: { price_1m_input_tokens: 0.35, price_1m_output_tokens: 0.70 }, median_output_tokens_per_second: 180.2 },
-                { id: "4", name: "Llama 3 8B", model_creator: { name: "Meta" }, evaluations: { artificial_analysis_intelligence_index: 75.1, artificial_analysis_coding_index: 68.0, artificial_analysis_math_index: 72.0, mmlu_pro: 0.81, gpqa: 0.70, hle: 0.65, livecodebench: 0.75, scicode: 0.70, math_500: 0.78, aime: 0.73 }, pricing: { price_1m_input_tokens: 0.0, price_1m_output_tokens: 0.0 }, median_output_tokens_per_second: 150.0 },
-                { id: "5", name: "Mistral Large", model_creator: { name: "Mistral AI" }, evaluations: { artificial_analysis_intelligence_index: 88.9, artificial_analysis_coding_index: 80.0, artificial_analysis_math_index: 85.0, mmlu_pro: 0.91, gpqa: 0.85, hle: 0.80, livecodebench: 0.88, scicode: 0.82, math_500: 0.90, aime: 0.87 }, pricing: { price_1m_input_tokens: 8.0, price_1m_output_tokens: 24.0 }, median_output_tokens_per_second: 110.8 },
-                { id: "6", name: "GPT-3.5 Turbo", model_creator: { name: "OpenAI" }, evaluations: { artificial_analysis_intelligence_index: 80.5, artificial_analysis_coding_index: 72.0, artificial_analysis_math_index: 75.0, mmlu_pro: 0.85, gpqa: 0.75, hle: 0.70, livecodebench: 0.78, scicode: 0.73, math_500: 0.82, aime: 0.78 }, pricing: { price_1m_input_tokens: 0.5, price_1m_output_tokens: 1.5 }, median_output_tokens_per_second: 165.1 },
-            ],
-            TextToImage: [
-                { id: "dall-e-3", name: "DALL E 3", model_creator: { name: "OpenAI" }, elo: 1250, rank: 1, categories: [
-                    { style_category: "people", subject_matter_category: "portraits", elo: 1280 },
-                    { style_category: "scenery", subject_matter_category: "landscapes", elo: 1220 },
-                    { style_category: "abstract", subject_matter_category: "geometric", elo: 1250 }
-                ]},
-                { id: "midjourney", name: "Midjourney", model_creator: { name: "Midjourney Inc." }, elo: 1240, rank: 2, categories: [
-                    { style_category: "people", subject_matter_category: "portraits", elo: 1260 },
-                    { style_category: "scenery", subject_matter_category: "landscapes", elo: 1230 },
-                    { style_category: "abstract", subject_matter_category: "geometric", elo: 1200 }
-                ]},
-                { id: "imagen", name: "Imagen", model_creator: { name: "Google" }, elo: 1200, rank: 3, categories: [
-                    { style_category: "people", subject_matter_category: "portraits", elo: 1190 },
-                    { style_category: "scenery", subject_matter_category: "landscapes", elo: 1210 },
-                    { style_category: "abstract", subject_matter_category: "geometric", elo: 1220 }
-                ]},
-            ],
-            // Simplified ELO data for other media models
-            ImageEditing: [{ name: "ImageEdit-Pro", creator: "Vendor A", elo: 1300, rank: 1 }, { name: "PhotoGen-X", creator: "Vendor B", elo: 1250, rank: 2 }],
-            TextToSpeech: [{ name: "VoiceSynth-HD", creator: "Vendor B", elo: 1150, rank: 2 }, { name: "Audionome", creator: "Vendor C", elo: 1280, rank: 1 }],
-            TextToVideo: [{ name: "VideoGen-FX", creator: "Vendor D", elo: 1100, rank: 2 }, { name: "ClipForge", creator: "Vendor E", elo: 1350, rank: 1 }],
-            ImageToVideo: [{ name: "MotionMaker", creator: "Vendor F", elo: 1180, rank: 2 }, { name: "AnimatiQ", creator: "Vendor G", elo: 1240, rank: 1 }],
-        };
+        // --- 1. CONFIGURATION AND MOCK DATA ---
+        const API_LLM_ENDPOINT = "https://artificialanalysis.ai/api/v2/data/llms/models";
+        // NOTE: The API key is blank as per instructions. It will trigger a 401 error, leading to mock data fallback.
+        const API_KEY = ""; 
+        const MAX_RETRIES = 3;
 
         const MODEL_TYPES = {
             LLMs: "LLMs (Text)",
@@ -194,13 +207,104 @@
             'gpqa': 'GPQA'
         };
 
+        let llmModelList = []; // Will hold fetched or mock LLM data
+        
+        const FALLBACK_LLM_DATA = [
+            { id: "1", name: "GPT-4o", model_creator: { name: "OpenAI" }, evaluations: { artificial_analysis_intelligence_index: 92.5, artificial_analysis_coding_index: 85.0, artificial_analysis_math_index: 90.5, mmlu_pro: 0.95, gpqa: 0.90, hle: 0.88, livecodebench: 0.92, scicode: 0.86, math_500: 0.97, aime: 0.91 }, pricing: { price_1m_input_tokens: 5.0, price_1m_output_tokens: 15.0 }, median_output_tokens_per_second: 120.5 },
+            { id: "2", name: "Claude 3 Opus", model_creator: { name: "Anthropic" }, evaluations: { artificial_analysis_intelligence_index: 91.8, artificial_analysis_coding_index: 82.5, artificial_analysis_math_index: 88.0, mmlu_pro: 0.93, gpqa: 0.89, hle: 0.85, livecodebench: 0.90, scicode: 0.84, math_500: 0.95, aime: 0.89 }, pricing: { price_1m_input_tokens: 15.0, price_1m_output_tokens: 75.0 }, median_output_tokens_per_second: 85.0 },
+            { id: "3", name: "Gemini 2.5 Flash", model_creator: { name: "Google" }, evaluations: { artificial_analysis_intelligence_index: 84.2, artificial_analysis_coding_index: 75.0, artificial_analysis_math_index: 80.0, mmlu_pro: 0.88, gpqa: 0.79, hle: 0.75, livecodebench: 0.80, scicode: 0.77, math_500: 0.85, aime: 0.81 }, pricing: { price_1m_input_tokens: 0.35, price_1m_output_tokens: 0.70 }, median_output_tokens_per_second: 180.2 },
+            { id: "4", name: "Llama 3 8B", model_creator: { name: "Meta" }, evaluations: { artificial_analysis_intelligence_index: 75.1, artificial_analysis_coding_index: 68.0, artificial_analysis_math_index: 72.0, mmlu_pro: 0.81, gpqa: 0.70, hle: 0.65, livecodebench: 0.75, scicode: 0.70, math_500: 0.78, aime: 0.73 }, pricing: { price_1m_input_tokens: 0.0, price_1m_output_tokens: 0.0 }, median_output_tokens_per_second: 150.0 },
+            { id: "5", name: "Mistral Large", model_creator: { name: "Mistral AI" }, evaluations: { artificial_analysis_intelligence_index: 88.9, artificial_analysis_coding_index: 80.0, artificial_analysis_math_index: 85.0, mmlu_pro: 0.91, gpqa: 0.85, hle: 0.80, livecodebench: 0.88, scicode: 0.82, math_500: 0.90, aime: 0.87 }, pricing: { price_1m_input_tokens: 8.0, price_1m_output_tokens: 24.0 }, median_output_tokens_per_second: 110.8 },
+            { id: "6", name: "GPT-3.5 Turbo", model_creator: { name: "OpenAI" }, evaluations: { artificial_analysis_intelligence_index: 80.5, artificial_analysis_coding_index: 72.0, artificial_analysis_math_index: 75.0, mmlu_pro: 0.85, gpqa: 0.75, hle: 0.70, livecodebench: 0.78, scicode: 0.73, math_500: 0.82, aime: 0.78 }, pricing: { price_1m_input_tokens: 0.5, price_1m_output_tokens: 1.5 }, median_output_tokens_per_second: 165.1 },
+        ];
+
+        // MOCK_DATA structure for non-LLM models remains the same
+        const MOCK_DATA = {
+            TextToImage: [
+                { id: "dall-e-3", name: "DALL E 3", model_creator: { name: "OpenAI" }, elo: 1250, rank: 1, categories: [
+                    { style_category: "people", subject_matter_category: "portraits", elo: 1280 },
+                    { style_category: "scenery", subject_matter_category: "landscapes", elo: 1220 },
+                    { style_category: "abstract", subject_matter_category: "geometric", elo: 1250 }
+                ]},
+                { id: "midjourney", name: "Midjourney", model_creator: { name: "Midjourney Inc." }, elo: 1240, rank: 2, categories: [
+                    { style_category: "people", subject_matter_category: "portraits", elo: 1260 },
+                    { style_category: "scenery", subject_matter_category: "landscapes", elo: 1230 },
+                    { style_category: "abstract", subject_matter_category: "geometric", elo: 1200 }
+                ]},
+                { id: "imagen", name: "Imagen", model_creator: { name: "Google" }, elo: 1200, rank: 3, categories: [
+                    { style_category: "people", subject_matter_category: "portraits", elo: 1190 },
+                    { style_category: "scenery", subject_matter_category: "landscapes", elo: 1210 },
+                    { style_category: "abstract", subject_matter_category: "geometric", elo: 1220 }
+                ]},
+            ],
+            ImageEditing: [{ name: "ImageEdit-Pro", creator: "Vendor A", elo: 1300, rank: 1 }, { name: "PhotoGen-X", creator: "Vendor B", elo: 1250, rank: 2 }],
+            TextToSpeech: [{ name: "VoiceSynth-HD", creator: "Vendor B", elo: 1150, rank: 2 }, { name: "Audionome", creator: "Vendor C", elo: 1280, rank: 1 }],
+            TextToVideo: [{ name: "VideoGen-FX", creator: "Vendor D", elo: 1100, rank: 2 }, { name: "ClipForge", creator: "Vendor E", elo: 1350, rank: 1 }],
+            ImageToVideo: [{ name: "MotionMaker", creator: "Vendor F", elo: 1180, rank: 2 }, { name: "AnimatiQ", creator: "Vendor G", elo: 1240, rank: 1 }],
+        };
+
         let currentModelType = 'LLMs';
         let mainChart;
         let comparisonChart;
 
-        // --- 2. UTILITY FUNCTIONS ---
+        // --- 2. API FETCHING LOGIC ---
+
+        async function fetchLlmModels(retries = MAX_RETRIES) {
+            document.getElementById('api-error-message').classList.add('hidden');
+            document.getElementById('loading-message').classList.remove('hidden');
+
+            try {
+                const response = await fetch(API_LLM_ENDPOINT, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY 
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        throw new Error("API Key Missing/Invalid. Using mock data.");
+                    }
+                    if (response.status === 429 && retries > 0) {
+                        const delay = Math.pow(2, MAX_RETRIES - retries) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchLlmModels(retries - 1);
+                    }
+                    throw new Error(`API fetch failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Process and normalize fetched data to fit dashboard structure
+                return result.data.map(model => ({
+                    id: model.id,
+                    name: model.name,
+                    slug: model.slug,
+                    model_creator: model.model_creator,
+                    evaluations: {
+                        // Assuming API provides these fields (and MMLU/GPQA are 0-1, while others are scores)
+                        artificial_analysis_intelligence_index: model.evaluations?.artificial_analysis_intelligence_index || 0,
+                        artificial_analysis_coding_index: model.evaluations?.artificial_analysis_coding_index || 0, 
+                        artificial_analysis_math_index: model.evaluations?.artificial_analysis_math_index || 0,
+                        mmlu_pro: model.evaluations?.mmlu_pro || 0,
+                        gpqa: model.evaluations?.gpqa || 0,
+                    },
+                    pricing: model.pricing || { price_1m_input_tokens: 0.0, price_1m_output_tokens: 0.0 },
+                    median_output_tokens_per_second: model.median_output_tokens_per_second || 0,
+                }));
+
+            } catch (error) {
+                // Handle API error gracefully by falling back to mock data
+                document.getElementById('api-error-message').classList.remove('hidden');
+                return FALLBACK_LLM_DATA;
+            } finally {
+                document.getElementById('loading-message').classList.add('hidden');
+            }
+        }
+
+        // --- 3. UTILITY FUNCTIONS ---
         function updateRangeValues() {
-            // Check if elements exist before updating (relevant only for LLM filters)
             const intelValue = document.getElementById('intelligence-value');
             if (intelValue) intelValue.textContent = document.getElementById('intelligence-range').value;
             
@@ -235,7 +339,7 @@
             }
         }
 
-        // --- 3. RENDERING LOGIC (Model-Specific) ---
+        // --- 4. RENDERING LOGIC (Model-Specific) ---
 
         // LLM - Bubble Chart
         function renderLLMChart(data) {
@@ -256,7 +360,8 @@
                         data: [{
                             x: model.evaluations.artificial_analysis_intelligence_index, 
                             y: model.median_output_tokens_per_second, 
-                            r: Math.max(8, model.pricing.price_1m_input_tokens * 0.5) 
+                            // Ensure model.pricing and price_1m_input_tokens exist for sizing
+                            r: Math.max(8, (model.pricing?.price_1m_input_tokens || 0) * 0.5) 
                         }],
                         backgroundColor: 'rgba(8, 140, 180, 0.7)', // Cyan
                         hoverBackgroundColor: 'rgba(6, 78, 97, 0.9)',
@@ -280,7 +385,12 @@
                         legend: { labels: { color: '#334155' } },
                         tooltip: {
                             callbacks: {
-                                label: (c) => [ c.dataset.label, `Intelligence: ${c.parsed.x.toFixed(1)}`, `Speed: ${c.parsed.y.toFixed(1)} tokens/s`, `Input Price: $${(c.raw.r / 0.5).toFixed(2)}/1M` ]
+                                label: (c) => [ 
+                                    c.dataset.label, 
+                                    `Intelligence: ${c.parsed.x.toFixed(1)}`, 
+                                    `Speed: ${c.parsed.y.toFixed(1)} tokens/s`, 
+                                    `Input Price: $${((c.raw.r / 0.5) || 0).toFixed(2)}/1M (Size)` 
+                                ]
                             }
                         }
                     }
@@ -296,8 +406,8 @@
             const model1Id = document.getElementById('compare-model-1').value;
             const model2Id = document.getElementById('compare-model-2').value;
 
-            const model1 = MOCK_DATA.LLMs.find(m => m.id === model1Id);
-            const model2 = MOCK_DATA.LLMs.find(m => m.id === model2Id);
+            const model1 = llmModelList.find(m => m.id === model1Id);
+            const model2 = llmModelList.find(m => m.id === model2Id);
 
             if (!model1 || !model2) return;
 
@@ -305,8 +415,10 @@
             
             const getModelDataPoints = (model) => labels.map(label => {
                 const key = Object.keys(LLM_COMPARISON_METRICS).find(k => LLM_COMPARISON_METRICS[k] === label);
-                // Multiplying by 100 to make the chart range 0-100 instead of 0-1 for clarity
-                return model.evaluations[key] * 100;
+                // Assume 0-1 range for MMLU/GPQA, 0-100 for AA indices (mock data is scaled, but API might vary)
+                let score = model.evaluations[key] || 0;
+                // Normalize to 0-100% for radar chart visualization
+                return score > 1 ? score : score * 100; 
             });
 
             comparisonChart = new Chart(ctx, {
@@ -345,7 +457,7 @@
                             pointLabels: { color: '#334155', font: { size: 12 } },
                             suggestedMin: 0,
                             suggestedMax: 100,
-                            ticks: { display: false } // Hide radial ticks for cleaner look
+                            ticks: { display: false }
                         }
                     },
                     plugins: {
@@ -373,10 +485,10 @@
                 row.insertCell(0).textContent = model.name;
                 row.insertCell(1).textContent = model.model_creator.name;
                 row.insertCell(2).textContent = model.evaluations.artificial_analysis_intelligence_index.toFixed(1);
-                row.insertCell(3).textContent = model.evaluations.artificial_analysis_coding_index.toFixed(1);
-                row.insertCell(4).textContent = model.evaluations.artificial_analysis_math_index.toFixed(1);
+                row.insertCell(3).textContent = (model.evaluations.artificial_analysis_coding_index * 100).toFixed(1); // Scale for display if 0-1
+                row.insertCell(4).textContent = (model.evaluations.artificial_analysis_math_index * 100).toFixed(1); // Scale for display if 0-1
                 row.insertCell(5).textContent = model.median_output_tokens_per_second.toFixed(1);
-                row.insertCell(6).textContent = `$${model.pricing.price_1m_input_tokens.toFixed(2)}`;
+                row.insertCell(6).textContent = `$${(model.pricing.price_1m_input_tokens || 0).toFixed(2)}`;
 
                 row.cells[0].className = 'px-4 py-3 whitespace-nowrap font-medium text-primary-cyan';
                 for (let i = 1; i < 7; i++) {
@@ -386,7 +498,8 @@
         }
 
 
-        // Text-to-Image - ELO Bar Chart with Category Breakdown
+        // Media Model Rendering (T2I, Image Editing, etc.)
+        
         function renderT2IChart(data) {
             clearChart();
             clearComparisonChart();
@@ -402,7 +515,7 @@
             const labels = data.map(m => m.name);
             const overallElo = data.map(m => m.elo);
 
-            // Extract category data for overlay
+            // Extract category data for overlay (include_categories=true logic)
             const categoryMap = {};
             data.forEach(model => {
                 model.categories.forEach(cat => {
@@ -495,7 +608,6 @@
             });
         }
         
-        // Generic Media ELO (for other categories)
         function renderGenericELOTable(data, title) {
             clearChart();
             clearComparisonChart();
@@ -524,7 +636,6 @@
                 }
             });
 
-            // For ELO data, a simple bar chart is sufficient if no category data is available
             renderGenericELOChart(data, title);
         }
 
@@ -572,14 +683,19 @@
         }
 
 
-        // --- 4. FILTERING LOGIC ---
+        // --- 5. FILTERING LOGIC ---
         function getModelData() {
+            // Check if LLM list is populated; otherwise return the relevant mock list
+            if (currentModelType === 'LLMs') {
+                return llmModelList;
+            }
             return MOCK_DATA[currentModelType] || [];
         }
 
         function applyFilters() {
             const data = getModelData();
             
+            document.getElementById('current-analysis-title').textContent = MODEL_TYPES[currentModelType];
             document.getElementById('chart-title').textContent = `${MODEL_TYPES[currentModelType]} Analysis`;
             document.getElementById('table-title').textContent = `${MODEL_TYPES[currentModelType]} Model Results`;
 
@@ -587,25 +703,38 @@
 
             if (currentModelType === 'LLMs') {
                 document.getElementById('llm-comparison-card').classList.remove('hidden');
-                updateRangeValues(); // Ensure values are updated before filtering LLMs
+                updateRangeValues();
 
                 const creator = document.getElementById('creator-filter').value;
+                const pricingTier = document.getElementById('pricing-tier-filter').value;
                 const minIntelligence = parseFloat(document.getElementById('intelligence-range').value);
                 const minSpeed = parseFloat(document.getElementById('speed-range').value);
                 const maxPrice = parseFloat(document.getElementById('price-max').value);
 
                 filteredData = data.filter(model => {
+                    const price = model.pricing?.price_1m_input_tokens || 0;
+                    
                     const creatorMatch = (creator === 'all' || model.model_creator.name === creator);
                     const intelligenceMatch = model.evaluations.artificial_analysis_intelligence_index >= minIntelligence;
                     const speedMatch = model.median_output_tokens_per_second >= minSpeed;
-                    const priceMatch = model.pricing.price_1m_input_tokens <= maxPrice;
-                    return creatorMatch && intelligenceMatch && speedMatch && priceMatch;
+                    const priceMatch = price <= maxPrice;
+
+                    let tierMatch = true;
+                    if (pricingTier === 'free_open') {
+                        // Check if price is zero (or very close to zero, or undefined)
+                        tierMatch = price <= 0.0001; 
+                    } else if (pricingTier === 'paid') {
+                        // Check if price is greater than zero
+                        tierMatch = price > 0.0001;
+                    }
+
+                    return creatorMatch && intelligenceMatch && speedMatch && priceMatch && tierMatch;
                 });
                 renderLLMChart(filteredData);
                 renderLLMTable(filteredData);
-                renderComparisonChart(); // Re-render comparison chart when LLMs filters are applied
+                renderComparisonChart();
             } else if (currentModelType === 'TextToImage') {
-                // T2I filtering can be added here (e.g., filter by category ELO)
+                // T2I filtering logic can be expanded here
                 renderT2IChart(filteredData);
                 renderT2ITable(filteredData);
             } else {
@@ -614,7 +743,7 @@
             }
         }
 
-        // --- 5. DYNAMIC FILTER SETUP ---
+        // --- 6. DYNAMIC FILTER SETUP ---
         function loadDynamicFilters() {
             const container = document.getElementById('dynamic-filters-container');
             container.innerHTML = '';
@@ -632,6 +761,16 @@
             if (currentModelType === 'LLMs') {
                 // LLM Specific Filters
                 container.innerHTML = creatorHtml + `
+                    <!-- Pricing Tier Filter -->
+                    <div>
+                        <label for="pricing-tier-filter" class="block text-sm font-medium text-text-color mb-2">Pricing Tier</label>
+                        <select id="pricing-tier-filter" class="w-full p-2 rounded-lg bg-card-bg border border-gray-300 focus:ring-primary-cyan focus:border-primary-cyan text-text-color">
+                            <option value="all">All Models</option>
+                            <option value="paid">Paid Models</option>
+                            <option value="free_open">Free / Open Source</option>
+                        </select>
+                    </div>
+
                     <!-- Intelligence Index Filter -->
                     <div>
                         <label for="intelligence-range" class="block text-sm font-medium text-text-color mb-2">Intelligence Index (Min: <span id="intelligence-value">0</span>)</label>
@@ -658,7 +797,7 @@
                 
                 
                 // Populate creator dropdown for LLMs
-                const creators = [...new Set(MOCK_DATA.LLMs.map(m => m.model_creator.name))].sort();
+                const creators = [...new Set(llmModelList.map(m => m.model_creator.name))].sort();
                 const creatorSelect = document.getElementById('creator-filter');
                 creators.forEach(creator => {
                     const option = document.createElement('option');
@@ -668,13 +807,12 @@
                 });
 
             } else if (currentModelType === 'TextToImage') {
-                // T2I Specific Filters (e.g., category filter)
+                // T2I Specific Filters
                 container.innerHTML = creatorHtml + `
                     <div>
                         <label for="t2i-category-filter" class="block text-sm font-medium text-text-color mb-2">Filter by Category</label>
                         <select id="t2i-category-filter" class="w-full p-2 rounded-lg bg-card-bg border border-gray-300 focus:ring-primary-cyan focus:border-primary-cyan text-text-color">
                             <option value="all">All Categories</option>
-                            <!-- T2I categories populated here -->
                         </select>
                     </div>
                 `;
@@ -687,7 +825,7 @@
                     option.textContent = creator;
                     creatorSelect.appendChild(option);
                 });
-                // Populate categories for T2I (from the first model)
+                // Populate categories for T2I
                 const categories = [...new Set(MOCK_DATA.TextToImage[0].categories.map(c => c.style_category))].sort();
                 const categorySelect = document.getElementById('t2i-category-filter');
                 categories.forEach(cat => {
@@ -717,11 +855,10 @@
             const select1 = document.getElementById('compare-model-1');
             const select2 = document.getElementById('compare-model-2');
             
-            // Clear existing options
             select1.innerHTML = '';
             select2.innerHTML = '';
             
-            const models = MOCK_DATA.LLMs;
+            const models = llmModelList;
 
             models.forEach(model => {
                 const option1 = document.createElement('option');
@@ -742,10 +879,36 @@
             if (models.length > 1) {
                 select2.value = models[1].id;
             }
+        }
 
-            // Attach event listeners to re-render chart on change
-            select1.addEventListener('change', renderComparisonChart);
-            select2.addEventListener('change', renderComparisonChart);
+        function setupTabHandlers() {
+            const tabsContainer = document.getElementById('nav-tabs');
+            tabsContainer.innerHTML = '';
+
+            Object.keys(MODEL_TYPES).forEach(key => {
+                const button = document.createElement('button');
+                button.textContent = MODEL_TYPES[key];
+                button.className = `px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary-cyan transition-colors duration-150 border-b-2 border-transparent focus:outline-none`;
+                button.setAttribute('data-model-type', key);
+                tabsContainer.appendChild(button);
+
+                button.addEventListener('click', () => {
+                    // Update active state
+                    document.querySelectorAll('#nav-tabs button').forEach(btn => btn.classList.remove('tab-active'));
+                    button.classList.add('tab-active');
+
+                    // Update global type and render content
+                    currentModelType = key;
+                    loadDynamicFilters(); 
+                    applyFilters();
+                });
+            });
+
+            // Set default active tab
+            const defaultTab = tabsContainer.querySelector(`[data-model-type="${currentModelType}"]`);
+            if (defaultTab) {
+                defaultTab.classList.add('tab-active');
+            }
         }
 
         // Random color generator for T2I category chart
@@ -759,33 +922,23 @@
             return colors[seed] || colors.default;
         }
 
-        // --- 6. INITIALIZATION ---
-        function initializeDashboard() {
-            const modelTypeSelect = document.getElementById('model-type-filter');
+        // --- 7. INITIALIZATION ---
+        async function initializeDashboard() {
+            // 1. Fetch data (this is async)
+            llmModelList = await fetchLlmModels();
             
-            // Populate Model Type Selector
-            Object.keys(MODEL_TYPES).forEach(key => {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = MODEL_TYPES[key];
-                modelTypeSelect.appendChild(option);
-            });
+            // 2. Setup UI handlers
+            setupTabHandlers();
+            document.getElementById('apply-filters-btn').addEventListener('click', applyFilters);
             
-            // Initialize LLM comparison dropdowns
+            // 3. Initialize LLM comparison dropdowns (must run AFTER llmModelList is populated)
             populateComparisonDropdowns();
+            document.getElementById('compare-model-1').addEventListener('change', renderComparisonChart);
+            document.getElementById('compare-model-2').addEventListener('change', renderComparisonChart);
 
-            // Set initial state
-            currentModelType = 'LLMs'; 
+            // 4. Load initial content
             loadDynamicFilters();
             applyFilters();
-            
-            // Attach primary event listeners
-            document.getElementById('apply-filters-btn').addEventListener('click', applyFilters);
-            modelTypeSelect.addEventListener('change', (e) => {
-                currentModelType = e.target.value;
-                loadDynamicFilters(); // Reload filters when type changes
-                applyFilters(); // Re-render content immediately
-            });
         }
 
         document.addEventListener('DOMContentLoaded', initializeDashboard);
