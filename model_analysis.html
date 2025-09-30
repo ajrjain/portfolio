@@ -10,13 +10,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Configure Tailwind to use the Inter font and Indigo palette to match the portfolio -->
+    <!-- Configure Tailwind to use Poppins and Indigo palette to match the portfolio -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Poppins', 'sans-serif'], // Use Poppins to match portfolio
+                        sans: ['Poppins', 'sans-serif'],
                     },
                     colors: {
                         'primary-indigo': '#4f46e5', // Indigo-600 from portfolio
@@ -62,11 +62,11 @@
     <!-- 1. Dashboard Navbar (Matches Portfolio Navbar Style) -->
     <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="index.html" class="text-2xl font-bold text-primary-indigo hover:text-indigo-700 transition-colors">
+            <a href="portfolio.html" class="text-2xl font-bold text-primary-indigo hover:text-indigo-700 transition-colors">
                 <i class="fas fa-arrow-left text-xl mr-2"></i> Back to Portfolio
             </a>
             <div class="flex items-center space-x-5">
-                <a href="#tools" class="hidden md:inline-block bg-primary-indigo text-white py-2 px-5 rounded-full hover:bg-indigo-700 transition">Go to Tools Section</a>
+                <a href="portfolio.html#tools" class="hidden md:inline-block bg-primary-indigo text-white py-2 px-5 rounded-full hover:bg-indigo-700 transition">Go to Tools Section</a>
             </div>
         </div>
     </nav>
@@ -195,7 +195,7 @@
     <!-- Footer (Simplified to match portfolio) -->
     <footer class="bg-gray-800 text-white mt-16">
         <div class="max-w-7xl mx-auto py-6 px-4 text-center">
-            <p>© 2025 Anshul Jain. All Rights Reserved. | <a href="index.html" class="text-primary-indigo hover:text-white transition-colors">Back to Portfolio Home</a></p>
+            <p>© 2025 Anshul Jain. All Rights Reserved. | <a href="portfolio.html" class="text-primary-indigo hover:text-white transition-colors">Back to Portfolio Home</a></p>
         </div>
     </footer>
 
@@ -204,8 +204,8 @@
     <script>
         // --- 1. CONFIGURATION AND MOCK DATA ---
         const API_LLM_ENDPOINT = "https://artificialanalysis.ai/api/v2/data/llms/models";
-        // NOTE: The API key is blank as per instructions. It will trigger a 401 error, leading to mock data fallback.
-        const API_KEY = ""; 
+        // API Key provided by the user for live data fetching
+        const API_KEY = "aa_lAiVywlTGUNJhqsEFAMGDPjvfPlNlmNS"; 
         const MAX_RETRIES = 3;
 
         const MODEL_TYPES = {
@@ -271,6 +271,7 @@
             document.getElementById('loading-message').classList.remove('hidden');
 
             try {
+                // *** FIX: Revert to standard fetch to support independent browser launch (GitHub Pages) ***
                 const response = await fetch(API_LLM_ENDPOINT, {
                     method: 'GET',
                     headers: {
@@ -280,10 +281,12 @@
                 });
 
                 if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
-                        throw new Error("API Key Missing/Invalid. Using mock data.");
+                    // Check for CORS or network failure. If status is 0 (browser blocking), we assume CORS.
+                    if (response.status === 0 || response.status === 401 || response.status === 403 || response.status === 429) {
+                        throw new Error("Live API access blocked (CORS/Key/Rate Limit). Using mock data.");
                     }
                     if (response.status === 429 && retries > 0) {
+                        // Implement exponential backoff for rate limiting
                         const delay = Math.pow(2, MAX_RETRIES - retries) * 1000;
                         await new Promise(resolve => setTimeout(resolve, delay));
                         return fetchLlmModels(retries - 1);
@@ -300,19 +303,21 @@
                     slug: model.slug,
                     model_creator: model.model_creator,
                     evaluations: {
-                        // Assuming API provides these fields (and MMLU/GPQA are 0-1, while others are scores)
+                        // Safely extract evaluations, defaulting to 0 if missing
                         artificial_analysis_intelligence_index: model.evaluations?.artificial_analysis_intelligence_index || 0,
                         artificial_analysis_coding_index: model.evaluations?.artificial_analysis_coding_index || 0, 
                         artificial_analysis_math_index: model.evaluations?.artificial_analysis_math_index || 0,
                         mmlu_pro: model.evaluations?.mmlu_pro || 0,
                         gpqa: model.evaluations?.gpqa || 0,
                     },
+                    // Safely extract pricing, defaulting to 0.0 if missing
                     pricing: model.pricing || { price_1m_input_tokens: 0.0, price_1m_output_tokens: 0.0 },
                     median_output_tokens_per_second: model.median_output_tokens_per_second || 0,
                 }));
 
             } catch (error) {
                 // Handle API error gracefully by falling back to mock data
+                console.error("Error fetching LLM models:", error.message);
                 document.getElementById('api-error-message').classList.remove('hidden');
                 return FALLBACK_LLM_DATA;
             } finally {
@@ -496,16 +501,18 @@
             }
 
             data.forEach(model => {
+                const price = model.pricing?.price_1m_input_tokens || 0;
                 const row = tbody.insertRow();
                 row.className = 'hover:bg-gray-100 transition duration-150';
                 
                 row.insertCell(0).textContent = model.name;
                 row.insertCell(1).textContent = model.model_creator.name;
                 row.insertCell(2).textContent = model.evaluations.artificial_analysis_intelligence_index.toFixed(1);
-                row.insertCell(3).textContent = (model.evaluations.artificial_analysis_coding_index * 100).toFixed(1); // Scale for display if 0-1
-                row.insertCell(4).textContent = (model.evaluations.artificial_analysis_math_index * 100).toFixed(1); // Scale for display if 0-1
+                // Normalize and format scores that might be 0-1
+                row.insertCell(3).textContent = (model.evaluations.artificial_analysis_coding_index > 1 ? model.evaluations.artificial_analysis_coding_index : model.evaluations.artificial_analysis_coding_index * 100).toFixed(1); 
+                row.insertCell(4).textContent = (model.evaluations.artificial_analysis_math_index > 1 ? model.evaluations.artificial_analysis_math_index : model.evaluations.artificial_analysis_math_index * 100).toFixed(1); 
                 row.insertCell(5).textContent = model.median_output_tokens_per_second.toFixed(1);
-                row.insertCell(6).textContent = `$${(model.pricing.price_1m_input_tokens || 0).toFixed(2)}`;
+                row.insertCell(6).textContent = `$${price.toFixed(2)}`;
 
                 row.cells[0].className = 'px-4 py-3 whitespace-nowrap font-medium text-primary-cyan';
                 for (let i = 1; i < 7; i++) {
