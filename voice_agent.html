@@ -9,24 +9,68 @@
 <body>
     <h1>SpiritVoice Widget Test</h1>
     <p>This page tests the SpiritVoice widget initialization.</p>
-
-    <!-- Load the widget script using absolute URL -->
-<script src="https://ais-dev-zviucmps2igsu2yw6sw23c-137205473789.asia-southeast1.run.app/api/v1/widget.js"></script>
-
-    <script>
-      // Check if SpiritVoice is defined
-      function checkSpiritVoice() {
-        if (typeof window.SpiritVoice !== 'undefined') {
-          console.log('SpiritVoice loaded, initializing...');
-          window.SpiritVoice.init({ agentId: '58cd1924-f473-45c7-a290-ff3089c682a6' });
-        } else {
-          console.log('SpiritVoice not ready, retrying...');
-          setTimeout(checkSpiritVoice, 2000); // Retry every 2000ms
-        }
+<script>
+(function() {
+  // Create global SpiritVoice object
+  window.SpiritVoice = {
+    init: function(config) {
+      if (!config || !config.agentId) {
+        console.error('SpiritVoice: agentId is required');
+        return;
       }
 
-      // Start the initialization check
-      checkSpiritVoice();
-    </script>
+      // Create container
+      var container = document.createElement('div');
+      container.id = 'spiritvoice-widget-container';
+      container.style.position = 'fixed';
+      container.style.bottom = '20px';
+      container.style.right = '20px';
+      container.style.zIndex = '9999';
+      container.style.width = '0px'; // Start hidden/small
+      container.style.height = '0px';
+      
+      // Create iframe
+      var iframe = document.createElement('iframe');
+      
+      // Hardcoded base URL for your app
+      var baseUrl = 'https://ais-dev-zviucmps2igsu2yw6sw23c-137205473789.asia-southeast1.run.app';
+      
+      // Construct widget URL
+      iframe.src = baseUrl + '/?mode=widget&agentId=' + config.agentId;
+      
+      iframe.style.border = 'none';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.borderRadius = '12px';
+      iframe.style.background = 'transparent';
+      iframe.allow = "microphone *"; // Important for voice
+      
+      // Append to DOM
+      container.appendChild(iframe);
+      document.body.appendChild(container);
+
+      // Handle messages from iframe (e.g. resize)
+      window.addEventListener('message', function(event) {
+        // Ensure message is from our base URL
+        if (event.origin !== baseUrl) return;
+        
+        if (event.data.type === 'SPIRITVOICE_RESIZE') {
+          container.style.width = event.data.width || '400px';
+          container.style.height = event.data.height || '600px';
+        }
+      });
+      
+      // Default size for the widget
+      container.style.width = '400px';
+      container.style.height = '600px';
+      
+      console.log('SpiritVoice: Widget initialized with agentId: ' + config.agentId);
+    }
+  };
+})();
+
+// Initialize the widget
+window.SpiritVoice.init({ agentId: 'test-agent-id' });
+</script>
 </body>
 </html>
