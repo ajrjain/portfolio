@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
     <title>SpiritVoice Widget Test</title>
 </head>
 <body>
@@ -20,7 +21,7 @@
           window.SpiritVoice.init({ agentId: '58cd1924-f473-45c7-a290-ff3089c682a6' });
         } else {
           console.log('SpiritVoice not ready, retrying...');
-          setTimeout(checkSpiritVoice, 2000); // Retry every 100ms
+          setTimeout(checkSpiritVoice, 2000); // Retry every 2000ms
         }
       }
 
