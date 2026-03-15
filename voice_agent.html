@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Agent Test | Priyanka</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #1e293b;
+        }
+        .test-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        .status-badge.ready {
+            background: #dcfce7;
+            color: #166534;
+        }
+        h1 {
+            margin: 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+        .agent-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="test-card">
+        <div id="status" class="status-badge">Connecting to SpiritVoice...</div>
+        <h1>Agent Priyanka</h1>
+        <p>This is a sandbox environment to test your voice agent integration.</p>
+        
+        <div class="agent-info">
+            <strong>ID:</strong> 58cd1924-f473-45c7-a290-ff3089c682a6<br>
+            <strong>Status:</strong> <span id="init-text">Waiting for script...</span>
+        </div>
+    </div>
+
+    <script 
+        src="https://ais-dev-zviucmps2igsu2yw6sw23c-137205473789.asia-southeast1.run.app/widget.js"
+        async
+        onload="initSpiritVoice()"
+        onerror="handleError()">
+    </script>
+
+    <script>
+        function initSpiritVoice() {
+            console.log("Script loaded. Initializing SpiritVoice...");
+            
+            if (typeof SpiritVoice !== 'undefined') {
+                SpiritVoice.init({
+                    agentId: "58cd1924-f473-45c7-a290-ff3089c682a6",
+                    name: "Priyanka",
+                    primaryColor: "#2563eb"
+                });
+
+                // Update UI for feedback
+                const badge = document.getElementById('status');
+                badge.textContent = "Agent Ready";
+                badge.classList.add('ready');
+                document.getElementById('init-text').textContent = "Initialized Successfully";
+            } else {
+                handleError();
+            }
+        }
+
+        function handleError() {
+            const badge = document.getElementById('status');
+            badge.textContent = "Load Failed";
+            badge.style.background = "#fee2e2";
+            badge.style.color = "#991b1b";
+            document.getElementById('init-text').textContent = "Error: SpiritVoice is not defined";
+            console.error("The SpiritVoice script failed to load or define the object.");
+        }
+    </script>
+
+</body>
+</html>
