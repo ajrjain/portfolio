@@ -1,223 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tune Tales by Krishvi – Devotional Songs</title>
-  <meta name="description" content="A colorful, kid‑friendly page for 5‑year‑old Krishvi’s devotional songs. Watch, enjoy, and subscribe to her YouTube channel!" />
-  <meta property="og:title" content="Tune Tales by Krishvi – Devotional Songs" />
-  <meta property="og:description" content="Sweet bhajans by 5‑year‑old Krishvi. Watch and subscribe!" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://i.ytimg.com/vi/NcHk_5fy4vE/hqdefault.jpg" />
-  <meta name="theme-color" content="#ffb6d9" />
-  <link rel="preconnect" href="https://www.youtube.com" />
-  <link rel="preconnect" href="https://i.ytimg.com" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tune Tales by Krishvi — joyful devotional music and little musical moments from a rising young star.">
+  <meta property="og:title" content="Tune Tales by Krishvi | Young Singer & Creator">
+  <meta property="og:description" content="Discover Krishvi's devotional songs and follow her musical journey.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://i.ytimg.com/vi/NcHk_5fy4vE/hqdefault.jpg">
+  <meta name="theme-color" content="#651d5d">
+  <link rel="preconnect" href="https://i.ytimg.com">
+  <link rel="preconnect" href="https://www.youtube-nocookie.com">
+  <title>Tune Tales by Krishvi | Young Singer & Creator</title>
   <style>
-    :root{
-      --bg-1:#fff2f7; /* pink */
-      --bg-2:#fff8e1; /* soft yellow */
-      --bg-3:#e8f6ff; /* sky */
-      --ink:#2b2b2b;
-      --accent:#ff77aa;
-      --accent-2:#7c4dff;
-      --card:#ffffff;
-      --shadow:0 8px 24px rgba(0,0,0,.08);
-      --radius:20px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      color:var(--ink);
-      background:
-        radial-gradient(1200px 800px at 10% -10%, var(--bg-2) 0 40%, transparent 41%),
-        radial-gradient(1000px 700px at 110% 10%, var(--bg-3) 0 40%, transparent 41%),
-        linear-gradient(135deg, var(--bg-1), #fefefe);
-    }
-    .wrap{max-width:1200px;margin-inline:auto;padding:24px}
-
-    /* Header */
-    header{
-      position:sticky;top:0;z-index:20;
-      backdrop-filter:saturate(1.3) blur(8px);
-      background:linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55));
-      border-bottom:1px solid rgba(0,0,0,.06);
-    }
-    .hero{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:14px 24px}
-    .brand{display:flex;gap:16px;align-items:center}
-    .logo{
-      width:56px;height:56px;border-radius:50%;
-      background: conic-gradient(from 180deg, #ff9ec7, #ffd866, #93e4ff, #c8a9ff, #ff9ec7);
-      display:grid;place-items:center;box-shadow: var(--shadow);
-    }
-    .logo span{font-size:30px}
-    h1{font-size:clamp(1.25rem, 2.3vw + .6rem, 2rem);margin:0}
-    .tag{opacity:.8;font-size:.95rem;margin-top:2px}
-
-    /* Subscribe CTA */
-    .cta{
-      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end
-    }
-    .btn{
-      appearance:none;border:none;cursor:pointer;
-      padding:10px 16px;border-radius:999px;font-weight:700;
-      background:linear-gradient(90deg, var(--accent), #ffcb6b);
-      color:#1e0d1a;box-shadow:0 8px 16px rgba(255,119,170,.35);
-      transition:transform .15s ease, box-shadow .15s ease, filter .2s ease;
-      text-decoration:none;display:inline-flex;align-items:center;gap:8px
-    }
-    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(255,119,170,.4)}
-    .btn:active{transform:translateY(0)}
-
-    /* Fun floating notes */
-    .notes{position:fixed;inset:0;pointer-events:none;z-index:0}
-    .notes span{position:absolute;font-size:clamp(18px, 2vw, 28px);opacity:.18;animation:float 14s linear infinite}
-    .notes span:nth-child(odd){animation-duration:18s}
-    @keyframes float{from{transform:translateY(110vh) rotate(0)} to{transform:translateY(-15vh) rotate(360deg)}}
-
-    /* Content */
-    main{position:relative;z-index:1}
-    .intro{margin:26px auto 14px;max-width:840px;text-align:center;line-height:1.6}
-
-    /* Grid */
-    .grid{
-      display:grid;gap:22px;
-      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-      align-items:start
-    }
-
-    .card{
-      background:var(--card);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:12px;border:1px solid rgba(0,0,0,.06);
-      transition:transform .18s ease, box-shadow .2s ease, border-color .2s ease;
-    }
-    .card:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(0,0,0,.12);border-color:rgba(0,0,0,.08)}
-
-    .ratio{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000}
-    .ratio iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-
-    .caption{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
-    .caption small{opacity:.7}
-    .yt-link{font-weight:600;text-decoration:none;color:var(--accent-2)}
-    .yt-link:hover{text-decoration:underline}
-
-    /* Footer */
-    footer{margin:38px 0 24px;text-align:center;opacity:.75}
-
-    @media (min-width: 1100px){
-      .grid{grid-template-columns:repeat(3, 1fr)}
-    }
+    :root { --plum:#3c123b; --berry:#7c276e; --rose:#d94d92; --coral:#ff806f; --cream:#fffaf4; --sand:#f7ecdf; --ink:#281e2b; --muted:#665b67; --line:rgba(60,18,59,.13); --white:#fff; --shadow:0 22px 60px rgba(66,24,61,.13); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:var(--cream); font:16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color:inherit; }
+    .shell { width:min(1160px, calc(100% - 40px)); margin:auto; }
+    .eyebrow { margin:0 0 11px; color:var(--rose); font-size:.73rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
+    .site-header { position:absolute; z-index:5; width:100%; color:#fff; }
+    .nav { min-height:78px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; letter-spacing:.01em; }
+    .brand-mark { width:36px; height:36px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.46); border-radius:50%; background:rgba(255,255,255,.12); font-size:1.1rem; }
+    .nav-links { display:flex; gap:25px; align-items:center; font-size:.87rem; font-weight:700; }
+    .nav-links a { color:#fff; text-decoration:none; opacity:.88; }
+    .nav-links a:hover { opacity:1; }
+    .hero { overflow:hidden; position:relative; min-height:680px; padding:158px 0 86px; color:#fff; background:radial-gradient(circle at 81% 25%, rgba(255,162,147,.44), transparent 18%), radial-gradient(circle at 73% 69%, rgba(226,103,171,.43), transparent 23%), linear-gradient(122deg, #30102f 0%, #651d5d 52%, #932e73 100%); }
+    .hero::before, .hero::after { content:""; position:absolute; border:1px solid rgba(255,255,255,.18); border-radius:50%; pointer-events:none; }
+    .hero::before { width:550px; height:550px; top:90px; right:-105px; }
+    .hero::after { width:310px; height:310px; bottom:-175px; left:43%; }
+    .hero-grid { position:relative; z-index:1; display:grid; grid-template-columns:1.12fr .88fr; align-items:center; gap:65px; }
+    .hero .eyebrow { color:#ffc4a5; }
+    h1 { max-width:680px; margin:0; font-family:Georgia, "Times New Roman", serif; font-size:clamp(3rem, 6.4vw, 5.8rem); font-weight:400; letter-spacing:-.055em; line-height:.94; }
+    h1 em { color:#ffb68e; font-style:italic; }
+    .hero-copy { max-width:550px; margin:27px 0 32px; color:rgba(255,255,255,.82); font-size:1.08rem; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; min-height:47px; padding:11px 18px; border:1px solid transparent; border-radius:3px; background:#fff; color:var(--plum); font-size:.85rem; font-weight:800; text-decoration:none; transition:transform .2s, background .2s; }
+    .button:hover { transform:translateY(-2px); }
+    .button.primary { background:var(--coral); color:#32132e; }
+    .button.ghost { border-color:rgba(255,255,255,.45); background:transparent; color:#fff; }
+    .hero-card { position:relative; min-height:375px; padding:27px; display:flex; flex-direction:column; justify-content:flex-end; isolation:isolate; border:1px solid rgba(255,255,255,.36); background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.07)); box-shadow:0 30px 80px rgba(26,2,32,.25); }
+    .hero-card::before { content:"♪"; position:absolute; z-index:-1; top:5px; left:29px; color:rgba(255,255,255,.2); font:220px/.8 Georgia,serif; }
+    .hero-card .play { width:56px; height:56px; display:grid; place-items:center; margin-bottom:18px; border-radius:50%; background:#fff; color:var(--berry); text-decoration:none; box-shadow:0 10px 25px rgba(34,4,32,.23); }
+    .hero-card strong { font-family:Georgia,serif; font-size:1.7rem; font-weight:400; }
+    .hero-card span { margin-top:5px; color:rgba(255,255,255,.75); font-size:.88rem; }
+    .social-proof { position:absolute; z-index:1; right:0; bottom:0; display:flex; align-items:center; gap:8px; padding:11px 15px; background:#ffcab0; color:#4c1d45; font-size:.78rem; font-weight:800; }
+    .social-proof svg { width:17px; height:17px; fill:currentColor; }
+    .intro { display:grid; grid-template-columns:.77fr 1.23fr; gap:80px; padding:100px 0; }
+    .intro h2, .section-heading h2 { margin:0; font-family:Georgia, "Times New Roman", serif; font-size:clamp(2.2rem,4vw,3.7rem); font-weight:400; letter-spacing:-.045em; line-height:1; }
+    .intro p { max-width:650px; margin:25px 0 0; color:var(--muted); font-size:1.08rem; }
+    .notes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:31px; }
+    .note { padding:17px 13px; border-top:2px solid var(--rose); background:#fff; box-shadow:0 8px 20px rgba(72,32,61,.06); }
+    .note b { display:block; color:var(--berry); font-size:.78rem; letter-spacing:.07em; text-transform:uppercase; }
+    .note span { display:block; margin-top:4px; font-size:.86rem; }
+    .video-section { padding:94px 0 105px; background:var(--sand); }
+    .section-heading { display:flex; align-items:end; justify-content:space-between; gap:25px; margin-bottom:36px; }
+    .section-heading p { max-width:430px; margin:0; color:var(--muted); }
+    .filters { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:27px; }
+    .filter { padding:8px 13px; border:1px solid var(--line); background:transparent; color:var(--muted); font:700 .79rem inherit; cursor:pointer; }
+    .filter[aria-pressed="true"], .filter:hover { border-color:var(--berry); background:var(--berry); color:#fff; }
+    .gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    .video-card { overflow:hidden; background:#fff; box-shadow:0 9px 25px rgba(75,36,64,.08); transition:transform .2s, box-shadow .2s; }
+    .video-card:hover { transform:translateY(-5px); box-shadow:var(--shadow); }
+    .video-card[hidden] { display:none; }
+    .video-thumb { position:relative; display:block; width:100%; aspect-ratio:16/9; padding:0; border:0; background:#54214f center/cover no-repeat; cursor:pointer; }
+    .video-thumb::after { content:"▶"; position:absolute; inset:50% auto auto 50%; display:grid; width:48px; height:48px; place-items:center; transform:translate(-50%,-50%); border-radius:50%; background:#fff; color:var(--berry); font-size:.8rem; box-shadow:0 8px 22px rgba(24,4,25,.35); }
+    .video-info { padding:17px 18px 20px; }
+    .pill { color:var(--rose); font-size:.7rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+    .video-info h3 { margin:6px 0 0; font:400 1.1rem/1.25 Georgia,serif; }
+    .video-info a { text-decoration:none; }
+    .empty { grid-column:1/-1; padding:30px; text-align:center; color:var(--muted); background:#fff; }
+    .instagram { padding:100px 0; background:linear-gradient(112deg,#3c123b,#8b286f); color:#fff; }
+    .instagram-inner { display:grid; grid-template-columns:1fr auto; align-items:center; gap:40px; }
+    .instagram h2 { max-width:680px; margin:0; font:400 clamp(2.35rem,4.7vw,4.5rem)/.98 Georgia,serif; letter-spacing:-.05em; }
+    .instagram h2 em { color:#ffc1a5; }
+    .instagram p { max-width:590px; margin:20px 0 0; color:rgba(255,255,255,.76); }
+    .insta-button { min-width:208px; background:#fff; color:var(--berry); }
+    footer { padding:30px 0; background:#240e25; color:rgba(255,255,255,.6); font-size:.82rem; }
+    .footer-inner { display:flex; justify-content:space-between; gap:20px; }
+    @media (max-width:800px) { .nav-links { display:none; } .hero { min-height:0; padding:126px 0 60px; } .hero-grid,.intro,.instagram-inner { grid-template-columns:1fr; gap:43px; } .hero-card { min-height:280px; max-width:510px; } .intro { padding:70px 0; } .gallery { grid-template-columns:repeat(2,1fr); } .section-heading { align-items:start; flex-direction:column; } .instagram { padding:72px 0; } .insta-button { justify-self:start; } }
+    @media (max-width:520px) { .shell { width:min(100% - 28px,1160px); } .hero { padding-top:115px; } h1 { font-size:3.25rem; } .hero-card { padding:20px; } .notes,.gallery { grid-template-columns:1fr; } .video-section { padding:70px 0; } .footer-inner { flex-direction:column; } }
   </style>
 </head>
 <body>
-  <!-- Floating musical notes -->
-  <div class="notes" aria-hidden="true">
-    <span style="left:6%; animation-delay:0s">🎵</span>
-    <span style="left:18%; animation-delay:3s">🎶</span>
-    <span style="left:33%; animation-delay:6s">🎼</span>
-    <span style="left:46%; animation-delay:1s">🕉️</span>
-    <span style="left:58%; animation-delay:9s">🎵</span>
-    <span style="left:72%; animation-delay:4s">🎶</span>
-    <span style="left:84%; animation-delay:7s">🎼</span>
-  </div>
-
-  <header>
-    <div class="hero wrap">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"><span>🎙️</span></div>
-        <div>
-          <h1>Tune Tales by <span style="color:var(--accent)">Krishvi</span> — Devotional Songs</h1>
-          <div class="tag">Sweet bhajans by a 5‑year‑old little singer ✨</div>
-        </div>
-      </div>
-      <div class="cta">
-        <!-- Official YouTube Subscribe Button -->
-        <div id="subscribeBtn"
-             class="g-ytsubscribe"
-             data-channelid="UCbq0GN6n63TJ3LJLIssWwvw"
-             data-layout="full"
-             data-theme="dark"
-             data-count="default"></div>
-        <!-- Extra direct subscribe link -->
-        <a class="btn" href="https://www.youtube.com/@krishvi_songs?sub_confirmation=1" target="_blank" rel="noopener noreferrer">🔔 Subscribe on YouTube</a>
-      </div>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <p class="intro">
-      Welcome to Krishvi’s colorful corner! Enjoy devotional songs sung with lots of love. Tap a video to play, and don’t forget to subscribe so you never miss a new bhajan.
-    </p>
-
-    <!--
-      ✨ HOW TO ADD MORE VIDEOS (incl. Shorts):
-      1) Paste full YouTube/Shorts links (or just the 11‑char IDs) into the videoLinks[] array below.
-      2) The script converts them to proper embed URLs automatically (Shorts become normal embeds).
-      3) That’s it! The gallery is fully responsive with controlled video size.
-    -->
-
-    <section id="gallery" class="grid" aria-label="Video gallery"></section>
+  <header class="site-header"><nav class="nav shell" aria-label="Main navigation"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">♪</span> Tune Tales by Krishvi</a><div class="nav-links"><a href="#story">Her story</a><a href="#videos">Videos</a><a href="#instagram">Instagram</a></div></nav></header>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title"><div class="hero-grid shell"><div><p class="eyebrow">Young voice · big heart</p><h1 id="hero-title">Little songs.<br><em>Bright</em> joy.</h1><p class="hero-copy">Welcome to the musical world of Krishvi — a young singer sharing devotional melodies, joyful performances, and moments made to smile.</p><div class="actions"><a class="button primary" href="#videos">Watch the videos <span aria-hidden="true">→</span></a><a class="button ghost" href="https://www.youtube.com/@krishvi_songs?sub_confirmation=1" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a></div></div><aside class="hero-card" aria-label="Tune Tales by Krishvi"><a class="play" href="#videos" aria-label="Explore Krishvi's videos">▶</a><strong>Sing. Smile.<br>Share the joy.</strong><span>New musical moments from Krishvi</span><a class="social-proof" href="https://www.instagram.com/tune_tales_by_krishvi/" target="_blank" rel="noopener noreferrer" aria-label="Follow Tune Tales by Krishvi on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9ZM17.75 5.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5ZM12 6.5A5.5 5.5 0 1 1 6.5 12 5.5 5.5 0 0 1 12 6.5Zm0 2A3.5 3.5 0 1 0 15.5 12 3.5 3.5 0 0 0 12 8.5Z"/></svg> @tune_tales_by_krishvi</a></aside></div></section>
+    <section class="intro shell" id="story"><div><p class="eyebrow">Meet Krishvi</p><h2>A little star with a love for music.</h2></div><div><p>Tune Tales by Krishvi is a happy space for heartfelt devotional music and childhood wonder. Every video is shared with warmth, sincerity, and a whole lot of enthusiasm.</p><div class="notes"><div class="note"><b>Heartfelt</b><span>Devotional melodies</span></div><div class="note"><b>Joyful</b><span>Musical performances</span></div><div class="note"><b>Growing</b><span>One song at a time</span></div></div></div></section>
+    <section class="video-section" id="videos" aria-labelledby="videos-heading"><div class="shell"><div class="section-heading"><div><p class="eyebrow">Watch & listen</p><h2>Krishvi’s video library</h2></div><p>A curated collection from the Tune Tales by Krishvi YouTube channel. Choose a category, then press play when you are ready to watch.</p></div><div class="filters" role="toolbar" aria-label="Filter videos"><button class="filter" type="button" data-filter="all" aria-pressed="true">All videos</button><button class="filter" type="button" data-filter="devotional" aria-pressed="false">Devotional songs</button><button class="filter" type="button" data-filter="performances" aria-pressed="false">Little performances</button><button class="filter" type="button" data-filter="special" aria-pressed="false">Special moments</button></div><div class="gallery" id="gallery" aria-live="polite"></div></div></section>
+    <section class="instagram" id="instagram" aria-labelledby="instagram-heading"><div class="instagram-inner shell"><div><p class="eyebrow">Behind the music</p><h2 id="instagram-heading">More smiles, stories & <em>song</em> on Instagram.</h2><p>Follow along for little behind-the-scenes moments and the latest from Tune Tales by Krishvi.</p></div><a class="button insta-button" href="https://www.instagram.com/tune_tales_by_krishvi/" target="_blank" rel="noopener noreferrer">Follow @tune_tales_by_krishvi <span aria-hidden="true">↗</span></a></div></section>
   </main>
-
-  <footer>
-    Made with 💖 for little star <strong>Krishvi</strong>. Jai Shree Krishna!
-  </footer>
-
-  <!-- Google script for the official YouTube Subscribe button -->
-  <script async src="https://apis.google.com/js/platform.js"></script>
-
+  <footer><div class="footer-inner shell"><span>© <span id="year"></span> Tune Tales by Krishvi</span><span>Made with love for a little musical star.</span></div></footer>
   <script>
-    // Add/maintain links here — full URLs or plain IDs are OK (Shorts links also work)
-    const videoLinks = [
-      "https://youtu.be/NcHk_5fy4vE", // 1) Provided
-      // The rest you shared — added below
-      "https://youtu.be/OZOo1GnEtek",
-      "https://youtu.be/RvoRuDQwti4",
-      "https://youtu.be/Rl9MCOlPwKA",
-      "https://youtu.be/Fw55nMM5jl4",
-      "https://youtu.be/Sz7Ci8lO5hg",
-      "https://youtu.be/VXMfsMUX4AI",
-      "https://youtu.be/kkgO4w79tgE",
-      "https://youtu.be/Fr_eM758ujw",
-      "https://youtu.be/2uw1INMkywI",
-      // Add more any time — Shorts supported, e.g. "https://www.youtube.com/shorts/VIDEO_ID"
+    // Video IDs are maintained from the Tune Tales by Krishvi channel. Add newly published videos here.
+    const videos = [
+      { id: 'NcHk_5fy4vE', category: 'devotional' }, { id: 'OZOo1GnEtek', category: 'devotional' },
+      { id: 'RvoRuDQwti4', category: 'performances' }, { id: 'Rl9MCOlPwKA', category: 'devotional' },
+      { id: 'Fw55nMM5jl4', category: 'special' }, { id: 'Sz7Ci8lO5hg', category: 'devotional' },
+      { id: 'VXMfsMUX4AI', category: 'performances' }, { id: 'kkgO4w79tgE', category: 'special' },
+      { id: 'Fr_eM758ujw', category: 'devotional' }, { id: '2uw1INMkywI', category: 'performances' }
     ];
-
-    function getYouTubeId(input){
-      if(!input) return null;
-      if(/^[a-zA-Z0-9_-]{11}$/.test(input)) return input; // already an ID
-      let m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/i); if(m) return m[1];
-      m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/i); if(m) return m[1];
-      m = input.match(/shorts\/([a-zA-Z0-9_-]{11})/i); if(m) return m[1];
-      m = input.match(/embed\/([a-zA-Z0-9_-]{11})/i); if(m) return m[1];
-      return null;
+    const labels = { devotional: 'Devotional song', performances: 'Little performance', special: 'Special moment' };
+    const gallery = document.querySelector('#gallery');
+    const youtubeUrl = id => `https://www.youtube.com/watch?v=${id}`;
+    const titleFor = (video, index) => `${labels[video.category]} · Tune Tales #${index + 1}`;
+    function createCard(video, index) {
+      const article = document.createElement('article'); article.className = 'video-card'; article.dataset.category = video.category;
+      const title = titleFor(video, index); const thumbnail = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+      article.innerHTML = `<button class="video-thumb" type="button" style="background-image:url('${thumbnail}')" aria-label="Play ${title}"></button><div class="video-info"><span class="pill">${labels[video.category]}</span><h3><a href="${youtubeUrl(video.id)}" target="_blank" rel="noopener noreferrer">${title} <span aria-hidden="true">↗</span></a></h3></div>`;
+      article.querySelector('.video-thumb').addEventListener('click', () => {
+        article.querySelector('.video-thumb').outerHTML = `<iframe title="${title}" width="560" height="315" src="https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0" style="display:block;width:100%;aspect-ratio:16/9;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+      }); return article;
     }
-
-    function makeCard(id, index){
-      const card = document.createElement('article');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="ratio">
-          <iframe
-            loading="lazy"
-            src="https://www.youtube.com/embed/${id}?rel=0"
-            title="Krishvi Song #${index+1}"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="caption">
-          <small>Video #${index+1}</small>
-          <a class="yt-link" href="https://youtu.be/${id}" target="_blank" rel="noopener">Watch on YouTube ↗</a>
-        </div>
-      `;
-      return card;
-    }
-
-    const gallery = document.getElementById('gallery');
-    const ids = videoLinks.map(getYouTubeId).filter(Boolean);
-    ids.forEach((id, i)=> gallery.appendChild(makeCard(id, i)));
+    videos.forEach((video, index) => gallery.appendChild(createCard(video, index)));
+    document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
+      const filter = button.dataset.filter; document.querySelectorAll('.filter').forEach(item => item.setAttribute('aria-pressed', item === button));
+      document.querySelectorAll('.video-card').forEach(card => card.hidden = filter !== 'all' && card.dataset.category !== filter);
+    }));
+    document.querySelector('#year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
